@@ -65,3 +65,10 @@ la reparación, facturación y entrega al cliente.
 
 Proyecto desarrollado con fines académicos utilizando buenas prácticas de
 desarrollo backend, separación por capas y arquitectura de microservicios.
+
+## Implementación disponible en esta rama
+
+La rama `feature/usuarios-jwt` incorpora `usuarios-service`,
+responsable de usuarios y seguridad. El servicio mantiene su propia base de
+datos `usuarios_db`, emite JWT compatibles con el Gateway y expone operaciones
+de registro, consulta, edición, roles, desactivación y validación interna.
