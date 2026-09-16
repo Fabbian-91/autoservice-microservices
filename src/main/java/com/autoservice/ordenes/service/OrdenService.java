@@ -94,7 +94,6 @@ public class OrdenService {
 
     public OrdenResponseDTO cambiarEstado(Long id, String nuevoEstado) {
         Orden orden = buscarOrden(id);
-        ordenValidator.checkOrdenNoEntregada(orden.getEstado().name(), id);
 
         EstadoOrden destino;
         try {
@@ -102,6 +101,8 @@ public class OrdenService {
         } catch (IllegalArgumentException e) {
             throw new EstadoOrdenInvalidoException(nuevoEstado);
         }
+
+        ordenValidator.checkOrdenNoEntregada(orden.getEstado().name(), id);
 
         ordenValidator.checkTransicionValida(orden.getEstado().name(), destino.name());
 
