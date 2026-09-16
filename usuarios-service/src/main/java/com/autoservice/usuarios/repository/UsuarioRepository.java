@@ -1,10 +1,16 @@
 package com.autoservice.usuarios.repository;
 
-import com.autoservice.usuarios.entity.Usuario;
+import com.autoservice.usuarios.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
 import java.util.Optional;
 
-public interface UsuarioRepository extends JpaRepository<Usuario,Long> {
+@Repository
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+
   Optional<Usuario> findByCorreoIgnoreCase(String correo);
+
   boolean existsByCorreoIgnoreCase(String correo);
+
 }

@@ -1,12 +1,19 @@
 package com.autoservice.usuarios.controller;
 
-import com.autoservice.usuarios.dto.*;
+import com.autoservice.usuarios.dto.ApiResponse;
+import com.autoservice.usuarios.dto.CrearUsuarioRequestDTO;
+import com.autoservice.usuarios.dto.LoginRequestDTO;
+import com.autoservice.usuarios.dto.LoginResponseDTO;
+import com.autoservice.usuarios.dto.UsuarioResponseDTO;
 import com.autoservice.usuarios.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Alias de autenticación para el contrato que expone el API Gateway.
@@ -16,16 +23,23 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
-  private final UsuarioService service;
 
-  @PostMapping("/login")
-  public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
-    return ResponseEntity.ok(ApiResponse.ok("Autenticación exitosa", service.login(request)));
-  }
+    private final UsuarioService usuarioService;
 
-  @PostMapping("/register")
-  public ResponseEntity<ApiResponse<UsuarioResponse>> register(@Valid @RequestBody CrearUsuarioRequest request) {
-    return ResponseEntity.status(HttpStatus.CREATED)
-        .body(ApiResponse.ok("Usuario creado", service.crear(request)));
-  }
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<LoginResponseDTO>> login(
+            @Valid @RequestBody LoginRequestDTO request
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.ok("Autenticación exitosa", usuarioService.login(request))
+        );
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<UsuarioResponseDTO>> register(
+            @Valid @RequestBody CrearUsuarioRequestDTO request
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.ok("Usuario creado", usuarioService.crear(request)));
+    }
 }

@@ -1,32 +1,124 @@
 package com.autoservice.usuarios.service;
 
-import com.autoservice.usuarios.dto.*;
-import com.autoservice.usuarios.entity.Usuario;
+import com.autoservice.usuarios.common.exceptions.CorreoDuplicadoException;
+import com.autoservice.usuarios.common.exceptions.CredencialesInvalidasException;
+import com.autoservice.usuarios.common.exceptions.RolInvalidoException;
+import com.autoservice.usuarios.common.exceptions.UsuarioNotFoundException;
+import com.autoservice.usuarios.dto.ActualizarUsuarioRequestDTO;
+import com.autoservice.usuarios.dto.CrearUsuarioRequestDTO;
+import com.autoservice.usuarios.dto.LoginRequestDTO;
+import com.autoservice.usuarios.dto.LoginResponseDTO;
+import com.autoservice.usuarios.dto.UsuarioResponseDTO;
+import com.autoservice.usuarios.mapper.UsuarioMapper;
+import com.autoservice.usuarios.model.Usuario;
 import com.autoservice.usuarios.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
-@Service @RequiredArgsConstructor
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UsuarioService {
-  private final UsuarioRepository repo; private final PasswordEncoder encoder; private final JwtService jwt;
-  public UsuarioResponse crear(CrearUsuarioRequest r){
-    if(repo.existsByCorreoIgnoreCase(r.correo())) throw new ResponseStatusException(HttpStatus.CONFLICT,"El correo ya está registrado");
-    Usuario u=new Usuario();u.setNombre(r.nombre().trim());u.setCorreo(r.correo().trim().toLowerCase());u.setContrasenaHash(encoder.encode(r.password()));u.setRol(rol(r.rol()));u.setActivo(true);return UsuarioResponse.from(repo.save(u));
-  }
-  public List<UsuarioResponse> listar(){return repo.findAll().stream().map(UsuarioResponse::from).toList();}
-  public UsuarioResponse obtener(Long id){return UsuarioResponse.from(find(id));}
-  public UsuarioResponse actualizar(Long id,ActualizarUsuarioRequest r){
-    Usuario u=find(id); if(r.nombre()!=null&&!r.nombre().isBlank())u.setNombre(r.nombre().trim());
-    if(r.correo()!=null&&!r.correo().equalsIgnoreCase(u.getCorreo())){if(repo.existsByCorreoIgnoreCase(r.correo()))throw new ResponseStatusException(HttpStatus.CONFLICT,"El correo ya está registrado");u.setCorreo(r.correo().trim().toLowerCase());}
-    if(r.password()!=null&&!r.password().isBlank())u.setContrasenaHash(encoder.encode(r.password())); return UsuarioResponse.from(repo.save(u));
-  }
-  public UsuarioResponse rol(Long id,String value){Usuario u=find(id);u.setRol(rol(value));return UsuarioResponse.from(repo.save(u));}
-  public UsuarioResponse desactivar(Long id){Usuario u=find(id);u.setActivo(false);return UsuarioResponse.from(repo.save(u));}
-  public LoginResponse login(LoginRequest r){Usuario u=repo.findByCorreoIgnoreCase(r.usuario()).orElseThrow(()->new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Usuario o contraseña incorrectos"));if(!u.isActivo()||!encoder.matches(r.password(),u.getContrasenaHash()))throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Usuario o contraseña incorrectos");return jwt.issue(u);}
-  private Usuario find(Long id){return repo.findById(id).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Usuario no encontrado"));}
-  private String rol(String v){String x=v==null||v.isBlank()?"CLIENTE":v.trim().toUpperCase();if(!List.of("ADMINISTRADOR","RECEPCION","MECANICO","FACTURACION").contains(x))throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Rol no permitido");return x;}
+
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final UsuarioMapper usuarioMapper;
+
+    @Transactional
+    public UsuarioResponseDTO crear(CrearUsuarioRequestDTO request) {
+        if (usuarioRepository.existsByCorreoIgnoreCase(request.getCorreo())) {
+            throw new CorreoDuplicadoException(request.getCorreo());
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setNombre(request.getNombre().trim());
+        usuario.setCorreo(request.getCorreo().trim().toLowerCase());
+        usuario.setContrasenaHash(passwordEncoder.encode(request.getPassword()));
+        usuario.setRol(validarRol(request.getRol()));
+        usuario.setActivo(true);
+
+        return usuarioMapper.toResponseDTO(usuarioRepository.save(usuario));
+    }
+
+    public List<UsuarioResponseDTO> listar() {
+        return usuarioRepository.findAll().stream()
+                .map(usuarioMapper::toResponseDTO)
+                .toList();
+    }
+
+    public UsuarioResponseDTO obtener(Long id) {
+        return usuarioMapper.toResponseDTO(buscarUsuario(id));
+    }
+
+    @Transactional
+    public UsuarioResponseDTO actualizar(Long id, ActualizarUsuarioRequestDTO request) {
+        Usuario usuario = buscarUsuario(id);
+
+        if (request.getNombre() != null && !request.getNombre().isBlank()) {
+            usuario.setNombre(request.getNombre().trim());
+        }
+
+        if (request.getCorreo() != null
+                && !request.getCorreo().equalsIgnoreCase(usuario.getCorreo())) {
+            if (usuarioRepository.existsByCorreoIgnoreCase(request.getCorreo())) {
+                throw new CorreoDuplicadoException(request.getCorreo());
+            }
+            usuario.setCorreo(request.getCorreo().trim().toLowerCase());
+        }
+
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            usuario.setContrasenaHash(passwordEncoder.encode(request.getPassword()));
+        }
+
+        return usuarioMapper.toResponseDTO(usuarioRepository.save(usuario));
+    }
+
+    @Transactional
+    public UsuarioResponseDTO rol(Long id, String rol) {
+        Usuario usuario = buscarUsuario(id);
+        usuario.setRol(validarRol(rol));
+        return usuarioMapper.toResponseDTO(usuarioRepository.save(usuario));
+    }
+
+    @Transactional
+    public UsuarioResponseDTO desactivar(Long id) {
+        Usuario usuario = buscarUsuario(id);
+        usuario.setActivo(false);
+        return usuarioMapper.toResponseDTO(usuarioRepository.save(usuario));
+    }
+
+    public LoginResponseDTO login(LoginRequestDTO request) {
+        Usuario usuario = usuarioRepository.findByCorreoIgnoreCase(request.getUsuario())
+                .orElseThrow(CredencialesInvalidasException::new);
+
+        if (!usuario.isActivo()
+                || !passwordEncoder.matches(request.getPassword(), usuario.getContrasenaHash())) {
+            throw new CredencialesInvalidasException();
+        }
+
+        return jwtService.generarToken(usuario);
+    }
+
+    private Usuario buscarUsuario(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new UsuarioNotFoundException(id));
+    }
+
+    private String validarRol(String rol) {
+        String rolNormalizado = rol == null || rol.isBlank()
+                ? "CLIENTE"
+                : rol.trim().toUpperCase();
+
+        if (!List.of("ADMINISTRADOR", "RECEPCION", "MECANICO", "FACTURACION", "CLIENTE")
+                .contains(rolNormalizado)) {
+            throw new RolInvalidoException(rolNormalizado);
+        }
+
+        return rolNormalizado;
+    }
 }

@@ -1,5 +1,23 @@
 package com.autoservice.usuarios.dto;
-public record ApiResponse<T>(boolean success,String message,T data){
-  public static <T> ApiResponse<T> ok(String m,T d){return new ApiResponse<>(true,m,d);}
-  public static <T> ApiResponse<T> error(String m){return new ApiResponse<>(false,m,null);}
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ApiResponse<T> {
+
+    private boolean success;
+    private String message;
+    private T data;
+
+    public static <T> ApiResponse<T> ok(String message, T data) {
+        return new ApiResponse<>(true, message, data);
+    }
+
+    public static <T> ApiResponse<T> error(String message) {
+        return new ApiResponse<>(false, message, null);
+    }
 }
