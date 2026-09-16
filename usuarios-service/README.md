@@ -2,7 +2,7 @@
 
 Servicio de usuarios y seguridad para AutoService.
 
-## Alcance
+## Funciones
 
 - Registrar usuarios con contraseña cifrada mediante BCrypt.
 - Iniciar sesión y emitir JWT.
@@ -39,7 +39,7 @@ Servicio: `http://localhost:8081` (el Gateway de la rama base lo consume en este
 
 Las contraseñas se almacenan únicamente como hash BCrypt.
 
-## Endpoints principales
+## Endpoints
 
 | Método | Ruta | Permiso |
 | --- | --- | --- |

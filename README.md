@@ -1,7 +1,7 @@
 # AutoService
 
-AutoService es un sistema de gestión para talleres mecánicos desarrollado con
-Java y Spring Boot bajo una arquitectura de microservicios.
+AutoService reúne los servicios usados para administrar un taller mecánico.
+Está hecho con Java y Spring Boot y se divide en microservicios.
 
 ## Funcionalidades
 
@@ -57,9 +57,8 @@ La comunicación entre servicios se realiza mediante:
 
 ## Objetivo
 
-Centralizar y automatizar los principales procesos de un taller mecánico,
-facilitando el seguimiento de vehículos desde la creación de una cita hasta
-la reparación, facturación y entrega al cliente.
+El flujo cubre el seguimiento de un vehículo desde la creación de la cita
+hasta la reparación, la facturación y la entrega al cliente.
 
 ## Usuarios y seguridad
 
