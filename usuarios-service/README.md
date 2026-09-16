@@ -1,6 +1,6 @@
 # AutoService - Usuarios y Seguridad
 
-Proyecto independiente correspondiente a la parte de **Yesenia** en la transcripción del profesor Walter Alpizar.
+Servicio de usuarios y seguridad para AutoService.
 
 ## Alcance
 
@@ -54,4 +54,6 @@ Las contraseñas se almacenan únicamente como hash BCrypt.
 | PATCH | `/api/usuarios/{id}/desactivar` | ADMINISTRADOR |
 | POST | `/api/usuarios/validar-token` | Interno |
 
-El proyecto se puede integrar después con el Gateway del trabajo grupal. El endpoint de validación usa el mismo contrato de JWT y está pensado para el consumo interno del Gateway.
+El Gateway consume este servicio por el puerto `8081`. El endpoint de
+validación mantiene el mismo contrato JWT y se usa para las solicitudes
+internas del Gateway.

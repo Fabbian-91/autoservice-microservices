@@ -61,14 +61,8 @@ Centralizar y automatizar los principales procesos de un taller mecánico,
 facilitando el seguimiento de vehículos desde la creación de una cita hasta
 la reparación, facturación y entrega al cliente.
 
-## Desarrollo
+## Usuarios y seguridad
 
-Proyecto desarrollado con fines académicos utilizando buenas prácticas de
-desarrollo backend, separación por capas y arquitectura de microservicios.
-
-## Implementación disponible en esta rama
-
-La rama `feature/usuarios-jwt` incorpora `usuarios-service`,
-responsable de usuarios y seguridad. El servicio mantiene su propia base de
-datos `usuarios_db`, emite JWT compatibles con el Gateway y expone operaciones
-de registro, consulta, edición, roles, desactivación y validación interna.
+Esta rama agrega `usuarios-service`. El servicio usa la base de datos
+`usuarios_db`, emite JWT compatibles con el Gateway y expone las operaciones
+de registro, consulta, edición, roles, desactivación y validación de tokens.
