@@ -1,0 +1,34 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: ordenes-service
+
+  datasource:
+    url: jdbc:sqlserver://localhost;databaseName=ordenesdb;encrypt=true;trustServerCertificate=true
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    username: sa
+    password: "crpp"
+
+  jpa:
+    database-platform: org.hibernate.dialect.SQLServerDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+# para otros microservicios
+services:
+  vehiculos:
+    url: http://localhost:8082
+  clientes:
+    url: http://localhost:8082
+
+logging:
+  level:
+    com.autoservice.ordenes: debug
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
