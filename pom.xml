@@ -38,6 +38,7 @@
         <module>notificaciones-service</module>
         <module>ordenes-service</module>
         <module>usuarios-service</module>
+        <module>gateway-service</module>
     </modules>
 
 </project>
