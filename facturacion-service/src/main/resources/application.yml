@@ -1,0 +1,42 @@
+server:
+  port: 8086
+
+spring:
+  application:
+    name: facturacion-service
+
+  datasource:
+    url: jdbc:sqlserver://localhost;instanceName=SQLEXPRESS;databaseName=facturacion_db;encrypt=true;trustServerCertificate=true
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    username: sa
+    password: crpp
+
+  jpa:
+    database-platform: org.hibernate.dialect.SQLServerDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: false
+
+clientes:
+  ordenes:
+    url: http://localhost:8084
+
+logging:
+  level:
+    com.autoservice.facturacion: DEBUG
