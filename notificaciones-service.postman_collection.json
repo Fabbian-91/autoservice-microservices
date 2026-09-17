@@ -1,0 +1,87 @@
+{
+  "info": {
+    "name": "ms-notificaciones",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8087" }
+  ],
+  "item": [
+    {
+      "name": "1. Simular - Cita registrada",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"clienteId\": 1,\n  \"fecha\": \"2026-09-20\",\n  \"hora\": \"10:30\"\n}"
+        },
+        "url": { "raw": "{{base_url}}/api/notificaciones/simular/cita-registrada", "host": ["{{base_url}}"], "path": ["api", "notificaciones", "simular", "cita-registrada"] }
+      }
+    },
+    {
+      "name": "2. Simular - Vehiculo listo",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"clienteId\": 2,\n  \"placa\": \"ABC-123\"\n}"
+        },
+        "url": { "raw": "{{base_url}}/api/notificaciones/simular/vehiculo-listo", "host": ["{{base_url}}"], "path": ["api", "notificaciones", "simular", "vehiculo-listo"] }
+      }
+    },
+    {
+      "name": "3. Simular - Factura generada",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"clienteId\": 1,\n  \"total\": 150.75\n}"
+        },
+        "url": { "raw": "{{base_url}}/api/notificaciones/simular/factura-generada", "host": ["{{base_url}}"], "path": ["api", "notificaciones", "simular", "factura-generada"] }
+      }
+    },
+    {
+      "name": "4. Listar todas las notificaciones",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{base_url}}/api/notificaciones", "host": ["{{base_url}}"], "path": ["api", "notificaciones"] }
+      }
+    },
+    {
+      "name": "5. Buscar notificacion por id",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{base_url}}/api/notificaciones/1", "host": ["{{base_url}}"], "path": ["api", "notificaciones", "1"] }
+      }
+    },
+    {
+      "name": "6. Listar notificaciones por cliente",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{base_url}}/api/notificaciones/cliente/1", "host": ["{{base_url}}"], "path": ["api", "notificaciones", "cliente", "1"] }
+      }
+    },
+    {
+      "name": "7. (Caso de error) Id que no existe -> 404",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{base_url}}/api/notificaciones/999", "host": ["{{base_url}}"], "path": ["api", "notificaciones", "999"] }
+      }
+    },
+    {
+      "name": "8. (Caso de error) Body invalido -> 400",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"placa\": \"XYZ-999\"\n}"
+        },
+        "url": { "raw": "{{base_url}}/api/notificaciones/simular/vehiculo-listo", "host": ["{{base_url}}"], "path": ["api", "notificaciones", "simular", "vehiculo-listo"] }
+      }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq-notificaciones
+    ports:
+      - "5672:5672"   # puerto AMQP: por acá se conecta Spring Boot
+      - "15672:15672" # puerto de la consola web de administracion
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    restart: unless-stopped
