@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: ms-historial-service
+
+  datasource:
+    url: "jdbc:sqlserver://localhost:1433;databaseName=historial_db;encrypt=true;trustServerCertificate=true"
+    username: sa
+    password: crpp
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+  jpa:
+    database-platform: org.hibernate.dialect.SQLServerDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  kafka:
+    bootstrap-servers: localhost:9092
+
+    consumer:
+      group-id: historial-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+server:
+  port: 8088
+
+logging:
+  level:
+    org.hibernate.SQL: debug
