@@ -9,8 +9,8 @@ spring:
 
     url: jdbc:sqlserver://localhost;instanceName=MSSQLSERVER;databaseName=clientes_vehiculos_db;encrypt=true;trustServerCertificate=true
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-    username: sa
-    password: "crpp"
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   # --- Configuracion de JPA / Hibernate ---
   jpa:

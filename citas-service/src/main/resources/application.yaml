@@ -4,8 +4,8 @@ spring:
 
   datasource:
     url: jdbc:sqlserver://localhost:1433;databaseName=citas_db;encrypt=true;trustServerCertificate=true
-    username: sa
-    password: ''
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
   jpa:
@@ -19,8 +19,8 @@ spring:
   rabbitmq:
     host: localhost
     port: 5672
-    username: guest
-    password: guest
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
 
   kafka:
     bootstrap-servers: localhost:9092

@@ -6,9 +6,9 @@ spring:
     name: usuarios-service
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3307/usuarios_db?allowPublicKeyRetrieval=true&useSSL=false}
-    username: ${SPRING_DATASOURCE_USERNAME:autoservice}
-    password: ${SPRING_DATASOURCE_PASSWORD:autoservice}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
 
   jpa:
     hibernate:
@@ -17,15 +17,15 @@ spring:
 
 security:
   jwt:
-    secret: '${JWT_SECRET:AutoService2026SuperSecretKeyForJWTTokenGenerationMustBeAtLeast256BitsLong!!}'
+    secret: ${JWT_SECRET}
     expiration-seconds: ${JWT_EXPIRATION_SECONDS:1800}
 
 app:
   seed:
-    admin-password: ${ADMIN_PASSWORD:admin123}
-    recepcion-password: ${RECEPCION_PASSWORD:recepcion123}
-    mecanico-password: ${MECANICO_PASSWORD:mecanico123}
-    facturacion-password: ${FACTURACION_PASSWORD:facturacion123}
+    admin-password: ${ADMIN_PASSWORD}
+    recepcion-password: ${RECEPCION_PASSWORD}
+    mecanico-password: ${MECANICO_PASSWORD}
+    facturacion-password: ${FACTURACION_PASSWORD}
 
 management:
   endpoints:

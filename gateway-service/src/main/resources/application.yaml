@@ -148,12 +148,12 @@ spring:
         jwt:
           #Pendiente: Configurar la URI del JWK Set para la validación de tokens JWT
           #jwk-set-uri: http://localhost:8081/.well-known/jwks.json
-          secret-key: ${JWT_SECRET:AutoService2026SuperSecretKeyForJWTTokenGenerationMustBeAtLeast256BitsLong!!}
+          secret-key: ${JWT_SECRET}
 
 #JWT - Clave secreta compartida con usuarios-service
 jwt:
-  secret: ${JWT_SECRET:AutoService2026SuperSecretKeyForJWTTokenGenerationMustBeAtLeast256BitsLong!!}
-  expiration: 86400000  #24 horas en milisegundos
+  secret: ${JWT_SECRET}
+  expiration: 86400000
 
 # Configuración de los microservicios
 services:

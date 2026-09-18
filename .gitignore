@@ -19,3 +19,9 @@ Thumbs.db
 
 # Maven
 .mvn/wrapper/maven-wrapper.jar
+
+
+# Secrets
+.env
+.env.*
+!.env.example
