@@ -1,5 +1,6 @@
 package com.autoservice.facturacion.model;
 
+import com.autoservice.facturacion.enums.EstadoFactura;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

@@ -1,5 +1,6 @@
 package com.autoservice.facturacion.model;
 
+import com.autoservice.facturacion.enums.TipoDetalle;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

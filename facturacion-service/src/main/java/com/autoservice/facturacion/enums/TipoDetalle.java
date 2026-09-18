@@ -1,4 +1,4 @@
-package com.autoservice.facturacion.model;
+package com.autoservice.facturacion.enums;
 
 public enum TipoDetalle {
     TRABAJO,

@@ -1,6 +1,6 @@
 package com.autoservice.facturacion.dto;
 
-import com.autoservice.facturacion.model.TipoDetalle;
+import com.autoservice.facturacion.enums.TipoDetalle;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
