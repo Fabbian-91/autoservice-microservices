@@ -25,7 +25,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://usuarios-db:3306/usuarios_db?allowPublicKeyRetrieval=true&useSSL=false
       SPRING_DATASOURCE_USERNAME: autoservice
       SPRING_DATASOURCE_PASSWORD: autoservice
-      JWT_SECRET: ${JWT_SECRET:-AutoService2026SuperSecretKeyForJWTTokenGenerationMustBeAtLeast256BitsLong!!}
+      JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION_SECONDS: ${JWT_EXPIRATION_SECONDS:-1800}
     depends_on:
       usuarios-db:
