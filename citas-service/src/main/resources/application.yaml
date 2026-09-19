@@ -3,9 +3,9 @@ spring:
     name: citas-service
 
   datasource:
-    url: jdbc:sqlserver://localhost:1433;databaseName=citas_db;encrypt=true;trustServerCertificate=true
+    url: jdbc:sqlserver://localhost\SQLEXPRESS01;databaseName=citas_db;encrypt=true;trustServerCertificate=true
     username: sa
-    password: ''
+    password: 'crpp'
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
   jpa:

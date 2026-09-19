@@ -15,9 +15,9 @@ import com.example.citas_service.publisher.CitaNotificationPublisher;
 import com.example.citas_service.repository.CitaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -28,8 +28,12 @@ public class CitaService {
     private final CitaRepository citaRepository;
     private final ClienteClient clienteClient;
     private final VehiculoClient vehiculoClient;
-    private final CitaEventPublisher citaEventPublisher;
-    private final CitaNotificationPublisher citaNotificationPublisher;
+
+    @Autowired(required = false)
+    private CitaEventPublisher citaEventPublisher;
+
+    @Autowired(required = false)
+    private CitaNotificationPublisher citaNotificationPublisher;
 
     public CitaResponseDTO crearCita(CitaRequestDTO request) {
         ClienteDTO cliente = clienteClient.obtenerCliente(request.getClienteId());
@@ -47,13 +51,14 @@ public class CitaService {
                     request.getFecha().toString(), request.getHora().toString());
         }
 
-        Cita cita = new Cita();
-        cita.setClienteId(request.getClienteId());
-        cita.setVehiculoId(request.getVehiculoId());
-        cita.setFecha(request.getFecha());
-        cita.setHora(request.getHora());
-        cita.setMotivo(request.getMotivo());
-        cita.setEstado(EstadoCita.PENDIENTE);
+        Cita cita = Cita.builder()
+                .clienteId(request.getClienteId())
+                .vehiculoId(request.getVehiculoId())
+                .fecha(request.getFecha())
+                .hora(request.getHora())
+                .motivo(request.getMotivo())
+                .estado(EstadoCita.PENDIENTE)
+                .build();
 
         Cita citaGuardada = citaRepository.save(cita);
         log.info("Cita creada con id: {}", citaGuardada.getId());
@@ -67,16 +72,20 @@ public class CitaService {
                 citaGuardada.getFechaCreacion()
         );
 
-        try {
-            citaEventPublisher.publicarCitaCreada(event);
-        } catch (Exception e) {
-            log.error("Error al publicar evento Kafka para cita {}: {}", citaGuardada.getId(), e.getMessage());
+        if (citaEventPublisher != null) {
+            try {
+                citaEventPublisher.publicarCitaCreada(event);
+            } catch (Exception e) {
+                log.error("Error al publicar evento Kafka para cita {}: {}", citaGuardada.getId(), e.getMessage());
+            }
         }
 
-        try {
-            citaNotificationPublisher.notificarCitaCreada(event);
-        } catch (Exception e) {
-            log.error("Error al enviar notificacion RabbitMQ para cita {}: {}", citaGuardada.getId(), e.getMessage());
+        if (citaNotificationPublisher != null) {
+            try {
+                citaNotificationPublisher.notificarCitaCreada(event);
+            } catch (Exception e) {
+                log.error("Error al enviar notificacion RabbitMQ para cita {}: {}", citaGuardada.getId(), e.getMessage());
+            }
         }
 
         return toResponse(citaGuardada, cliente, vehiculo);
