@@ -1,0 +1,35 @@
+services:
+  usuarios-db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: usuarios_db
+      MYSQL_USER: autoservice
+      MYSQL_PASSWORD: autoservice
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"
+    volumes:
+      - usuarios-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  usuarios-service:
+    build: .
+    ports:
+      - "8081:8081"
+    environment:
+      SERVER_PORT: 8081
+      SPRING_DATASOURCE_URL: jdbc:mysql://usuarios-db:3306/usuarios_db?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: autoservice
+      SPRING_DATASOURCE_PASSWORD: autoservice
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION_SECONDS: ${JWT_EXPIRATION_SECONDS:-1800}
+    depends_on:
+      usuarios-db:
+        condition: service_healthy
+
+volumes:
+  usuarios-db-data:

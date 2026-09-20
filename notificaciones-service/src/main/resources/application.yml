@@ -1,0 +1,28 @@
+server:
+  port: 8087
+
+spring:
+  application:
+    name: notificaciones-service
+
+  datasource:
+    url: jdbc:sqlserver://localhost;instanceName=SQLEXPRESS;databaseName=notificaciones_db;encrypt=true;trustServerCertificate=true
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    database-platform: org.hibernate.dialect.SQLServerDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+
+logging:
+  level:
+    com.autoservice.notificaciones: DEBUG
