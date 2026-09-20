@@ -25,3 +25,5 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+
+.idea/compiler.xml

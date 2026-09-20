@@ -12,9 +12,9 @@
     </parent>
 
     <groupId>com.autoservice</groupId>
-    <artifactId>ordenes-service</artifactId>
+    <artifactId>ms-ordenes-core</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>ordenes-service</name>
+    <name>ms-ordenes-core</name>
     <description>Microservicio de Ordenes de Trabajo - AutoService</description>
 
     <properties>
