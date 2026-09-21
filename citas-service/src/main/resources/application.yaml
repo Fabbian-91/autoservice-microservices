@@ -3,9 +3,9 @@ spring:
     name: citas-service
 
   datasource:
-    url: jdbc:sqlserver://localhost;instanceName=SQLEXPRESS01;databaseName=citas_db;encrypt=true;trustServerCertificate=true
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:sqlserver://localhost:1433;databaseName=citas_db;encrypt=true;trustServerCertificate=true
+    username: sa
+    password: crpp
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
   jpa:
@@ -19,8 +19,8 @@ spring:
   rabbitmq:
     host: localhost
     port: 5672
-    username: ${RABBITMQ_USERNAME}
-    password: ${RABBITMQ_PASSWORD}
+    username: guest
+    password: guest
 
   kafka:
     bootstrap-servers: localhost:9092

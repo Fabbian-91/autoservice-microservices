@@ -57,6 +57,4 @@ public class VehiculoController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(vehiculoService.deleteVehiculo(id));
     }
-
-
 }
