@@ -31,7 +31,6 @@
           <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.6.3/mapstruct-processor-1.6.3.jar" />
         </processorPath>
         <module name="ms-ordenes-core" />
-        <module name="ordenes-service (1)" />
       </profile>
       <profile name="Annotation profile for facturacion-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -86,9 +85,20 @@
         </processorPath>
         <module name="citas-service" />
       </profile>
+      <profile name="Annotation profile for ordenes-service" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.6.3/mapstruct-processor-1.6.3.jar" />
+        </processorPath>
+        <module name="ordenes-service" />
+      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="ordenes-service" target="21" />
+      <module name="ordenes-service (1)" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

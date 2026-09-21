@@ -146,13 +146,13 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          #Pendiente: Configurar la URI del JWK Set para la validación de tokens JWT
-          #jwk-set-uri: http://localhost:8081/.well-known/jwks.json
-          secret-key: ${JWT_SECRET}
+          #NO CAMBIAR EL VALOR DE LA CLAVE SECRETA, YA QUE DEBE COINCIDIR CON LA CLAVE SECRETA DEL USUARIOS-SERVICE
+          secret-key: ${JWT_SECRET:az8fN2mJ5wQ7tV4xL9sP1dR6cK3hG8yB0uE5iO2pA7nM4qW6}
 
 #JWT - Clave secreta compartida con usuarios-service
 jwt:
-  secret: ${JWT_SECRET}
+  #NO CAMBIAR EL VALOR DE LA CLAVE SECRETA, YA QUE DEBE COINCIDIR CON LA CLAVE SECRETA DEL USUARIOS-SERVICE
+  secret: ${JWT_SECRET:az8fN2mJ5wQ7tV4xL9sP1dR6cK3hG8yB0uE5iO2pA7nM4qW6}
   expiration: 86400000
 
 # Configuración de los microservicios
