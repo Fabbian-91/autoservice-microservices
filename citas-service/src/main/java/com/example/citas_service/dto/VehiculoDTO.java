@@ -9,5 +9,5 @@ public class VehiculoDTO {
     private String placa;
     private String marca;
     private String modelo;
-    private Long clienteId;
+
 }
