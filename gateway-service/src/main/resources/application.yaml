@@ -146,13 +146,13 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          #[NO MODIFICAR]
-          secret-key: ${JWT_SECRET:az8fN2mJ5wQ7tV4xL9sP1dR6cK3hG8yB0uE5iO2pA7nM4qW6}
+          #Pendiente: Configurar la URI del JWK Set para la validación de tokens JWT
+          #jwk-set-uri: http://localhost:8081/.well-known/jwks.json
+          secret-key: ${JWT_SECRET}
 
 #JWT - Clave secreta compartida con usuarios-service
 jwt:
-  #[NO MODIFICAR]
-  secret: ${JWT_SECRET:az8fN2mJ5wQ7tV4xL9sP1dR6cK3hG8yB0uE5iO2pA7nM4qW6}
+  secret: ${JWT_SECRET}
   expiration: 86400000
 
 # Configuración de los microservicios

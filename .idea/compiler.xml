@@ -29,9 +29,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="usuarios-service" />
-        <module name="ordenes-service (1)" />
         <module name="ordenes-service (2)" />
+        <module name="usuarios-service" />
         <module name="gateway-service" />
       </profile>
       <profile name="Annotation profile for inventario-service" enabled="true">
@@ -86,7 +85,6 @@
       <module name="ms-historial-service" options="-parameters" />
       <module name="notificaciones-service" options="-parameters" />
       <module name="ordenes-service" options="-parameters" />
-      <module name="ordenes-service (1)" options="-parameters" />
       <module name="ordenes-service (2)" options="-parameters" />
       <module name="usuarios-service" options="-parameters" />
     </option>
