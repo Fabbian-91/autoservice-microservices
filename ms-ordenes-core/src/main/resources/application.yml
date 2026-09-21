@@ -26,12 +26,29 @@ spring:
       enabled: true
       path: /h2-console
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+
 services:
   vehiculos:
     url: http://localhost:8082
 
   clientes:
     url: http://localhost:8082
+
+  inventario:
+    url: http://localhost:8085
+
+  usuarios:
+    url: http://localhost:8081
+
+app:
+  kafka:
+    topic:
+      ordenes: ordenes-eventos
 
 logging:
   level:
