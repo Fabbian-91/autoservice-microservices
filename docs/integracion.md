@@ -34,6 +34,23 @@ KAFKA_BOOTSTRAP_SERVERS=kafka:29092
 
 El Gateway expone el puerto `8080`. Los puertos de los microservicios deben quedar internos en el despliegue y publicarse solo cuando se necesiten para pruebas.
 
+### Gateway de evidencias
+
+Para probar la seguridad sin ocupar el `api-gateway` que ya esté ejecutándose en el equipo, se puede usar el puerto `18080`:
+
+```bash
+bash gateway-service/mvnw -q -f gateway-service/pom.xml -DskipTests package
+docker build -t autoservice-gateway-evidence:latest gateway-service
+docker run -d --name autoservice-gateway-evidence \
+  --network autoservice-usuarios-evidence \
+  -p 18080:8080 \
+  -e JWT_SECRET="$JWT_SECRET" \
+  -e USUARIOS_SERVICE_URL=http://autoservice-usuarios-evidence:8081 \
+  autoservice-gateway-evidence:latest
+```
+
+Con este contenedor quedan conectados el Gateway y `usuarios-service`. Las demás rutas aparecen como no disponibles hasta que sus microservicios se levanten en la misma red. La colección de Postman ya usa `http://localhost:18080` como `baseUrl` para estas evidencias.
+
 ## Seguridad
 
 - `usuarios-service` genera y valida JWT usando la clave definida en `JWT_SECRET`.
@@ -59,3 +76,17 @@ curl -X POST http://localhost:8080/api/auth/login \
 ```
 
 Las pruebas de endpoints protegidos deben ejecutarse usando el token devuelto por el login.
+
+## Colección de Postman
+
+Importar [`AutoService-Gateway.postman_collection.json`](AutoService-Gateway.postman_collection.json).
+La variable `baseUrl` viene configurada para el Gateway de evidencias en
+`http://localhost:18080`; si se levanta en el puerto normal, cambiarla a
+`http://localhost:8080`.
+
+Orden recomendado:
+
+1. `00 - Salud y disponibilidad`.
+2. `01 - Autenticación > Login administrador - guarda JWT`.
+3. Ejecutar las carpetas protegidas usando los IDs guardados en las variables.
+4. Ejecutar `11 - Casos de seguridad y error` para las evidencias de 401, 400 y 404.
