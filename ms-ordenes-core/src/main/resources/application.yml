@@ -6,24 +6,30 @@ spring:
     name: ordenes-service
 
   datasource:
-    url: jdbc:sqlserver://localhost;databaseName=ordenesdb;encrypt=true;trustServerCertificate=true
-    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:h2:mem:ordenes_db
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
 
   jpa:
-    database-platform: org.hibernate.dialect.SQLServerDialect
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
     show-sql: true
+    open-in-view: false
     properties:
       hibernate:
         format_sql: true
 
-# para otros microservicios
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
 services:
   vehiculos:
     url: http://localhost:8082
+
   clientes:
     url: http://localhost:8082
 
@@ -31,4 +37,3 @@ logging:
   level:
     com.autoservice.ordenes: debug
     org.hibernate.SQL: debug
-    org.hibernate.type.descriptor.sql.BasicBinder: trace

@@ -1,4 +1,4 @@
-package com.autoservice.facturacion.dto;
+package com.autoservice.facturacion.dto.DetalleFactura;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RepuestoOrdenDTO {
-
     private Long id;
     private Long repuestoId;
     private Integer cantidad;

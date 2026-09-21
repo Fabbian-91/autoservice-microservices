@@ -1,4 +1,4 @@
-package com.autoservice.facturacion.dto;
+package com.autoservice.facturacion.dto.DetalleFactura;
 
 import com.autoservice.facturacion.enums.TipoDetalle;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DetalleFacturaResponseDTO {
-
     private Long id;
     private TipoDetalle tipo;
     private String descripcion;

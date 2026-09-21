@@ -1,4 +1,4 @@
-package com.autoservice.facturacion.dto;
+package com.autoservice.facturacion.dto.DetalleFactura;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TrabajoOrdenDTO {
-
     private Long id;
     private String descripcion;
     private String estado;

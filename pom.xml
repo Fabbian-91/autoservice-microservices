@@ -39,6 +39,7 @@
         <module>ordenes-service</module>
         <module>usuarios-service</module>
         <module>gateway-service</module>
+        <module>facturacion-service</module>
     </modules>
 
 </project>

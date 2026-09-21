@@ -1,5 +1,6 @@
-package com.autoservice.facturacion.dto;
+package com.autoservice.facturacion.dto.Factura;
 
+import com.autoservice.facturacion.dto.DetalleFactura.DetalleFacturaResponseDTO;
 import com.autoservice.facturacion.enums.EstadoFactura;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FacturaResponseDTO {
-
     private Long id;
     private Long ordenId;
     private Long clienteId;

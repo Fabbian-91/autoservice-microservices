@@ -1,4 +1,4 @@
-package com.autoservice.facturacion.exception;
+package com.autoservice.facturacion.common.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

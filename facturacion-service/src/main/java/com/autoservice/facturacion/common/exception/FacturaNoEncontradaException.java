@@ -1,4 +1,4 @@
-package com.autoservice.facturacion.exception;
+package com.autoservice.facturacion.common.exception;
 
 public class FacturaNoEncontradaException extends RuntimeException {
 
