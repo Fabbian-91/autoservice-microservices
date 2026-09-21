@@ -3,7 +3,7 @@ package com.autoservice.ordenes.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "trabajo_Orden")
+@Table(name = "trabajo_orden")
 public class TrabajoOrden {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -293,7 +293,7 @@
     },
     {
       "name": "08 - Órdenes con trabajos y repuestos",
-      "description": "Estas rutas pertenecen a ordenes-service. El repositorio aún debe resolver su coexistencia con ms-ordenes-core en el puerto 8084.",
+      "description": "Rutas de trabajos, mecánicos y repuestos implementadas por ms-ordenes-core en develop.",
       "item": [
         { "name": "Listar trabajos de una orden", "request": { "method": "GET", "url": "{{baseUrl}}/api/ordenes/{{ordenId}}/trabajos" } },
         {

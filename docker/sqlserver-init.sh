@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-for database in clientes_vehiculos_db citas_db ordenesdb notificaciones_db historial_db; do
+for database in clientes_vehiculos_db citas_db notificaciones_db historial_db; do
   /opt/mssql-tools18/bin/sqlcmd \
     -C \
     -S "${SQLSERVER_HOST:-sqlserver}" \

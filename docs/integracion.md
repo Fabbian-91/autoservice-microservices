@@ -24,7 +24,6 @@ USUARIOS_SERVICE_URL=http://usuarios-service:8081
 CLIENTES_VEHICULOS_SERVICE_URL=http://clientes-vehiculos-service:8082
 CITAS_SERVICE_URL=http://citas-service:8083
 ORDENES_SERVICE_URL=http://ms-ordenes-core:8084
-ORDENES_DETALLE_SERVICE_URL=http://ordenes-detalle-service:8089
 INVENTARIO_SERVICE_URL=http://inventario-service:8085
 FACTURACION_SERVICE_URL=http://facturacion-service:8086
 NOTIFICACIONES_SERVICE_URL=http://notificaciones-service:8087
@@ -56,7 +55,7 @@ docker compose up -d --build
 
 Los Dockerfiles compilan cada microservicio dentro de su propia imagen; no es necesario tener artefactos `target/` generados antes de ejecutar Compose.
 
-El microservicio `ordenes-service` se publica internamente en `8089` como `ordenes-detalle-service`, porque `ms-ordenes-core` ya usa el puerto `8084`. El Gateway enruta automáticamente los endpoints de trabajos, mecánicos y repuestos hacia ese servicio.
+El módulo `ms-ordenes-core` de `develop` concentra las rutas de órdenes, trabajos, mecánicos y repuestos en el puerto `8084`. El Gateway enruta todos esos endpoints al mismo microservicio.
 
 ## Seguridad
 

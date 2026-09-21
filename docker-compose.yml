@@ -180,17 +180,26 @@ services:
     ports:
       - "18084:8084"
     environment:
-      ORDENES_DATASOURCE_URL: jdbc:sqlserver://sqlserver:1433;databaseName=ordenesdb;encrypt=false;trustServerCertificate=true
+      ORDENES_DATASOURCE_URL: jdbc:h2:file:/app/data/ordenes_db;DB_CLOSE_ON_EXIT=FALSE
       DB_USERNAME: sa
-      DB_PASSWORD: ${DB_PASSWORD:-AutoService2026!Sql}
+      DB_PASSWORD: ""
       CLIENTES_VEHICULOS_SERVICE_URL: http://clientes-vehiculos-service:8082
+      INVENTARIO_SERVICE_URL: http://inventario-service:8085
+      USUARIOS_SERVICE_URL: http://usuarios-service:8081
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
     depends_on:
-      sqlserver-init:
-        condition: service_completed_successfully
       clientes-vehiculos-service:
+        condition: service_started
+      inventario-service:
+        condition: service_started
+      usuarios-service:
+        condition: service_started
+      kafka:
         condition: service_started
     networks:
       - autoservice-net
+    volumes:
+      - ordenes_core_data:/app/data
     restart: unless-stopped
 
   inventario-service:
@@ -202,30 +211,6 @@ services:
       - inventario_data:/app/data
     environment:
       INVENTARIO_DATASOURCE_URL: jdbc:h2:file:/app/data/inventario_db;DB_CLOSE_ON_EXIT=FALSE
-    networks:
-      - autoservice-net
-    restart: unless-stopped
-
-  ordenes-detalle-service:
-    build:
-      context: ./ordenes-service
-    ports:
-      - "18089:8089"
-    volumes:
-      - ordenes_detalle_data:/app/data
-    environment:
-      SERVER_PORT: 8089
-      ORDENES_REPUESTOS_DATASOURCE_URL: jdbc:h2:file:/app/data/ordenes_db;DB_CLOSE_ON_EXIT=FALSE
-      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
-      USUARIOS_URL: http://usuarios-service:8081
-      INVENTARIO_URL: http://inventario-service:8085
-    depends_on:
-      usuarios-service:
-        condition: service_started
-      inventario-service:
-        condition: service_started
-      kafka:
-        condition: service_started
     networks:
       - autoservice-net
     restart: unless-stopped
@@ -282,7 +267,6 @@ services:
       CLIENTES_VEHICULOS_SERVICE_URL: http://clientes-vehiculos-service:8082
       CITAS_SERVICE_URL: http://citas-service:8083
       ORDENES_SERVICE_URL: http://ms-ordenes-core:8084
-      ORDENES_DETALLE_SERVICE_URL: http://ordenes-detalle-service:8089
       INVENTARIO_SERVICE_URL: http://inventario-service:8085
       NOTIFICACIONES_SERVICE_URL: http://notificaciones-service:8087
       HISTORIAL_SERVICE_URL: http://historial-service:8088
@@ -294,8 +278,6 @@ services:
       citas-service:
         condition: service_started
       ms-ordenes-core:
-        condition: service_started
-      ordenes-detalle-service:
         condition: service_started
       inventario-service:
         condition: service_started
@@ -312,7 +294,7 @@ volumes:
   usuarios_db_data:
   kafka_data:
   inventario_data:
-  ordenes_detalle_data:
+  ordenes_core_data:
 
 networks:
   autoservice-net:

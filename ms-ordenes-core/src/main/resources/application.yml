@@ -6,29 +6,53 @@ spring:
     name: ordenes-service
 
   datasource:
-    url: ${ORDENES_DATASOURCE_URL:jdbc:sqlserver://localhost:1433;databaseName=ordenesdb;encrypt=true;trustServerCertificate=true}
-    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: ${ORDENES_DATASOURCE_URL:jdbc:h2:file:/app/data/ordenes_db;DB_CLOSE_ON_EXIT=FALSE}
+    driver-class-name: org.h2.Driver
     username: ${DB_USERNAME:sa}
-    password: ${DB_PASSWORD}
+    password: ${DB_PASSWORD:}
 
   jpa:
-    database-platform: org.hibernate.dialect.SQLServerDialect
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
     show-sql: true
+    open-in-view: false
     properties:
       hibernate:
         format_sql: true
 
-# para otros microservicios
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
 services:
   vehiculos:
     url: ${CLIENTES_VEHICULOS_SERVICE_URL:http://localhost:8082}
+
   clientes:
     url: ${CLIENTES_VEHICULOS_SERVICE_URL:http://localhost:8082}
+
+  inventario:
+    url: ${INVENTARIO_SERVICE_URL:http://localhost:8085}
+
+  usuarios:
+    url: ${USUARIOS_SERVICE_URL:http://localhost:8081}
+
+app:
+  kafka:
+    topic:
+      ordenes: ordenes-events
 
 logging:
   level:
     com.autoservice.ordenes: debug
     org.hibernate.SQL: debug
-    org.hibernate.type.descriptor.sql.BasicBinder: trace

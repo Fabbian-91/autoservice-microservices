@@ -53,23 +53,6 @@ spring:
                     key-resolver: "#{@userKeyResolver}"
                     rate-limiter: "#{@inMemoryRateLimiter}"
 
-            # Estas rutas pertenecen al microservicio de trabajos y repuestos.
-            # Se declaran antes de /api/ordenes/** para evitar el conflicto
-            # de ambos módulos usando el mismo prefijo público.
-            - id: ordenes-detalle-service
-              uri: ${ORDENES_DETALLE_SERVICE_URL:http://localhost:8089}
-              predicates:
-                - Path=/api/ordenes/*/trabajos/**,/api/ordenes/*/mecanico,/api/ordenes/*/validar-cierre,/api/ordenes/*/repuestos/**
-              filters:
-                - name: CircuitBreaker
-                  args:
-                    name: ordenesDetalleCB
-                    fallbackUri: forward:/fallback/ordenes
-                - name: RequestRateLimiter
-                  args:
-                    key-resolver: "#{@userKeyResolver}"
-                    rate-limiter: "#{@inMemoryRateLimiter}"
-
             - id: ordenes-service
               uri: ${ORDENES_SERVICE_URL:http://localhost:8084}
               predicates:
@@ -182,8 +165,6 @@ services:
     url: ${CITAS_SERVICE_URL:http://localhost:8083}
   ordenes:
     url: ${ORDENES_SERVICE_URL:http://localhost:8084}
-  ordenes-detalle:
-    url: ${ORDENES_DETALLE_SERVICE_URL:http://localhost:8089}
   inventario:
     url: ${INVENTARIO_SERVICE_URL:http://localhost:8085}
   facturacion:
