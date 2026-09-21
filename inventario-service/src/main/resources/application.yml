@@ -6,7 +6,7 @@ spring:
     name: inventario-service
 
   datasource:
-    url: jdbc:h2:file:./data/inventario_db;DB_CLOSE_ON_EXIT=FALSE
+    url: ${INVENTARIO_DATASOURCE_URL:jdbc:h2:file:./data/inventario_db;DB_CLOSE_ON_EXIT=FALSE}
     driver-class-name: org.h2.Driver
     username: ${INVENTARIO_DB_USERNAME:sa}
     password: ${INVENTARIO_DB_PASSWORD:}

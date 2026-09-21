@@ -39,7 +39,7 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
             "/api/auth/register",
             "/actuator",
             "/fallback",
-            "api/health"
+            "/api/health"
     );
 
     @Override

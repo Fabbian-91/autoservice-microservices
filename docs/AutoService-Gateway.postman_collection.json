@@ -1,0 +1,403 @@
+{
+  "info": {
+    "name": "AutoService - Gateway y JWT",
+    "description": "Colección para consumir AutoService desde el Gateway. Ejecutar primero Autenticación > Login administrador para guardar el JWT en la colección.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:18000" },
+    { "key": "token", "value": "" },
+    { "key": "adminUser", "value": "admin@autoservice.local" },
+    { "key": "adminPassword", "value": "admin123" },
+    { "key": "usuarioId", "value": "1" },
+    { "key": "clienteId", "value": "1" },
+    { "key": "vehiculoId", "value": "1" },
+    { "key": "citaId", "value": "1" },
+    { "key": "ordenId", "value": "1" },
+    { "key": "repuestoId", "value": "1" },
+    { "key": "notificacionId", "value": "1" },
+    { "key": "facturaId", "value": "1" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{token}}", "type": "string" }
+    ]
+  },
+  "item": [
+    {
+      "name": "00 - Salud y disponibilidad",
+      "item": [
+        {
+          "name": "Health agregado de los servicios",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": "{{baseUrl}}/api/health/services"
+          }
+        },
+        {
+          "name": "Health del Gateway",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": "{{baseUrl}}/actuator/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "01 - Autenticación",
+      "item": [
+        {
+          "name": "Login administrador - guarda JWT",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"{{adminUser}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login exitoso', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "const body = pm.response.json();",
+                  "const data = body.data || body;",
+                  "pm.expect(data.token, 'El login debe devolver token').to.be.a('string').and.not.empty;",
+                  "pm.collectionVariables.set('token', data.token);",
+                  "pm.collectionVariables.set('tokenType', data.tipo || 'Bearer');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Validar JWT actual",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/usuarios/validar-token"
+          }
+        },
+        {
+          "name": "Registrar usuario cliente",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Cliente de prueba\",\n  \"correo\": \"cliente{{$timestamp}}@example.com\",\n  \"password\": \"cliente123\",\n  \"rol\": \"CLIENTE\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/register"
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Usuarios (ADMINISTRADOR)",
+      "item": [
+        { "name": "Listar usuarios", "request": { "method": "GET", "url": "{{baseUrl}}/api/usuarios" } },
+        { "name": "Obtener usuario", "request": { "method": "GET", "url": "{{baseUrl}}/api/usuarios/{{usuarioId}}" } },
+        {
+          "name": "Crear usuario",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Usuario de prueba\",\n  \"correo\": \"usuario{{$timestamp}}@example.com\",\n  \"password\": \"usuario123\",\n  \"rol\": \"RECEPCION\"\n}" },
+            "url": "{{baseUrl}}/api/usuarios"
+          }
+        },
+        {
+          "name": "Actualizar usuario",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Usuario actualizado\",\n  \"correo\": \"usuario.actualizado@example.com\"\n}" },
+            "url": "{{baseUrl}}/api/usuarios/{{usuarioId}}"
+          }
+        },
+        {
+          "name": "Cambiar rol",
+          "request": { "method": "PATCH", "url": "{{baseUrl}}/api/usuarios/{{usuarioId}}/rol?rol=RECEPCION" }
+        },
+        {
+          "name": "Desactivar usuario",
+          "request": { "method": "PATCH", "url": "{{baseUrl}}/api/usuarios/{{usuarioId}}/desactivar" }
+        }
+      ]
+    },
+    {
+      "name": "03 - Clientes",
+      "item": [
+        {
+          "name": "Crear cliente",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Cliente de prueba\",\n  \"cedula\": \"1-2345-6789\",\n  \"telefono\": \"8888-8888\",\n  \"correo\": \"cliente{{$timestamp}}@example.com\",\n  \"direccion\": \"San José\"\n}" },
+            "url": "{{baseUrl}}/api/clientes"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["const body = pm.response.json();", "if (body.id) pm.collectionVariables.set('clienteId', body.id);"] } }]
+        },
+        { "name": "Listar clientes", "request": { "method": "GET", "url": "{{baseUrl}}/api/clientes" } },
+        { "name": "Obtener cliente", "request": { "method": "GET", "url": "{{baseUrl}}/api/clientes/{{clienteId}}" } },
+        { "name": "Buscar por cédula", "request": { "method": "GET", "url": "{{baseUrl}}/api/clientes/cedula/1-2345-6789" } },
+        { "name": "Buscar por nombre", "request": { "method": "GET", "url": "{{baseUrl}}/api/clientes/buscar?nombre=Cliente" } },
+        {
+          "name": "Actualizar cliente",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Cliente actualizado\",\n  \"telefono\": \"8777-7777\"\n}" },
+            "url": "{{baseUrl}}/api/clientes/{{clienteId}}"
+          }
+        },
+        { "name": "Eliminar cliente", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/clientes/{{clienteId}}" } }
+      ]
+    },
+    {
+      "name": "04 - Vehículos",
+      "item": [
+        { "name": "Listar vehículos", "request": { "method": "GET", "url": "{{baseUrl}}/api/vehiculos" } },
+        { "name": "Obtener vehículo", "request": { "method": "GET", "url": "{{baseUrl}}/api/vehiculos/{{vehiculoId}}" } },
+        {
+          "name": "Crear vehículo",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"clienteId\": {{clienteId}},\n  \"placa\": \"ABC-123\",\n  \"marca\": \"Toyota\",\n  \"modelo\": \"Corolla\",\n  \"color\": \"Blanco\",\n  \"year\": 2022\n}" },
+            "url": "{{baseUrl}}/api/vehiculos"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["const body = pm.response.json();", "if (body.id) pm.collectionVariables.set('vehiculoId', body.id);"] } }]
+        },
+        {
+          "name": "Actualizar vehículo",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"clienteId\": {{clienteId}},\n  \"placa\": \"ABC-123\",\n  \"marca\": \"Toyota\",\n  \"modelo\": \"Corolla\",\n  \"color\": \"Gris\",\n  \"year\": 2022\n}" },
+            "url": "{{baseUrl}}/api/vehiculos/{{vehiculoId}}"
+          }
+        },
+        { "name": "Eliminar vehículo", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/vehiculos/{{vehiculoId}}" } }
+      ]
+    },
+    {
+      "name": "05 - Citas",
+      "item": [
+        {
+          "name": "Crear cita",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"clienteId\": {{clienteId}},\n  \"vehiculoId\": {{vehiculoId}},\n  \"fecha\": \"2026-10-15\",\n  \"hora\": \"10:30:00\",\n  \"motivo\": \"Mantenimiento preventivo\"\n}" },
+            "url": "{{baseUrl}}/api/citas"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["const body = pm.response.json();", "if (body.id) pm.collectionVariables.set('citaId', body.id);"] } }]
+        },
+        { "name": "Listar citas", "request": { "method": "GET", "url": "{{baseUrl}}/api/citas" } },
+        { "name": "Obtener cita", "request": { "method": "GET", "url": "{{baseUrl}}/api/citas/{{citaId}}" } },
+        { "name": "Confirmar cita", "request": { "method": "PATCH", "url": "{{baseUrl}}/api/citas/{{citaId}}/confirmar" } },
+        { "name": "Atender cita", "request": { "method": "PATCH", "url": "{{baseUrl}}/api/citas/{{citaId}}/atender" } },
+        { "name": "Cancelar cita", "request": { "method": "PATCH", "url": "{{baseUrl}}/api/citas/{{citaId}}/cancelar" } },
+        { "name": "Marcar cita no asistida", "request": { "method": "PATCH", "url": "{{baseUrl}}/api/citas/{{citaId}}/no-asistio" } }
+      ]
+    },
+    {
+      "name": "06 - Órdenes core",
+      "description": "Rutas del módulo ms-ordenes-core expuesto por el Gateway en 8084.",
+      "item": [
+        {
+          "name": "Crear orden",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"citaId\": {{citaId}},\n  \"clienteId\": {{clienteId}},\n  \"vehiculoId\": {{vehiculoId}},\n  \"motivoIngreso\": \"Revisión general del vehículo\",\n  \"kilometraje\": 45000\n}" },
+            "url": "{{baseUrl}}/api/ordenes"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["const body = pm.response.json();", "if (body.id) pm.collectionVariables.set('ordenId', body.id);"] } }]
+        },
+        { "name": "Listar órdenes", "request": { "method": "GET", "url": "{{baseUrl}}/api/ordenes" } },
+        { "name": "Obtener orden", "request": { "method": "GET", "url": "{{baseUrl}}/api/ordenes/{{ordenId}}" } },
+        { "name": "Órdenes por cliente", "request": { "method": "GET", "url": "{{baseUrl}}/api/ordenes/cliente/{{clienteId}}" } },
+        { "name": "Órdenes por vehículo", "request": { "method": "GET", "url": "{{baseUrl}}/api/ordenes/vehiculo/{{vehiculoId}}" } },
+        {
+          "name": "Registrar diagnóstico",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"diagnostico\": \"Se requiere cambio de aceite y revisión del sistema de frenos.\"\n}" },
+            "url": "{{baseUrl}}/api/ordenes/{{ordenId}}/diagnostico"
+          }
+        },
+        { "name": "Cambiar estado de orden", "request": { "method": "PATCH", "url": "{{baseUrl}}/api/ordenes/{{ordenId}}/estado?estado=EN_PROCESO" } },
+        {
+          "name": "Actualizar orden",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"citaId\": {{citaId}},\n  \"clienteId\": {{clienteId}},\n  \"vehiculoId\": {{vehiculoId}},\n  \"motivoIngreso\": \"Revisión y mantenimiento\",\n  \"kilometraje\": 45100\n}" },
+            "url": "{{baseUrl}}/api/ordenes/{{ordenId}}"
+          }
+        },
+        { "name": "Eliminar orden", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/ordenes/{{ordenId}}" } }
+      ]
+    },
+    {
+      "name": "07 - Inventario",
+      "item": [
+        {
+          "name": "Crear repuesto",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Filtro de aceite\",\n  \"descripcion\": \"Filtro compatible con Toyota Corolla\",\n  \"precioUnitario\": 12.50\n}" },
+            "url": "{{baseUrl}}/api/repuestos"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["const body = pm.response.json();", "if (body.id) pm.collectionVariables.set('repuestoId', body.id);"] } }]
+        },
+        { "name": "Listar repuestos", "request": { "method": "GET", "url": "{{baseUrl}}/api/repuestos" } },
+        { "name": "Obtener repuesto", "request": { "method": "GET", "url": "{{baseUrl}}/api/repuestos/{{repuestoId}}" } },
+        {
+          "name": "Registrar entrada",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"cantidad\": 10\n}" },
+            "url": "{{baseUrl}}/api/inventario/repuestos/{{repuestoId}}/entradas"
+          }
+        },
+        {
+          "name": "Consultar disponibilidad",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/inventario/repuestos/{{repuestoId}}/disponibilidad?cantidad=2" }
+        },
+        {
+          "name": "Registrar salida",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"cantidad\": 2,\n  \"ordenId\": {{ordenId}}\n}" },
+            "url": "{{baseUrl}}/api/inventario/repuestos/{{repuestoId}}/salidas"
+          }
+        },
+        { "name": "Listar movimientos", "request": { "method": "GET", "url": "{{baseUrl}}/api/inventario/movimientos" } },
+        { "name": "Movimientos por repuesto", "request": { "method": "GET", "url": "{{baseUrl}}/api/inventario/repuestos/{{repuestoId}}/movimientos" } },
+        { "name": "Movimientos por orden", "request": { "method": "GET", "url": "{{baseUrl}}/api/inventario/ordenes/{{ordenId}}/movimientos" } }
+      ]
+    },
+    {
+      "name": "08 - Órdenes con trabajos y repuestos",
+      "description": "Rutas de trabajos, mecánicos y repuestos implementadas por ms-ordenes-core en develop.",
+      "item": [
+        { "name": "Listar trabajos de una orden", "request": { "method": "GET", "url": "{{baseUrl}}/api/ordenes/{{ordenId}}/trabajos" } },
+        {
+          "name": "Crear trabajo",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"descripcion\": \"Cambio de aceite\",\n  \"horas\": 1.5,\n  \"costo\": 25.00\n}" },
+            "url": "{{baseUrl}}/api/ordenes/{{ordenId}}/trabajos"
+          }
+        },
+        { "name": "Asignar mecánico", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"mecanicoId\": {{usuarioId}}\n}" }, "url": "{{baseUrl}}/api/ordenes/{{ordenId}}/mecanico" } },
+        { "name": "Validar cierre", "request": { "method": "GET", "url": "{{baseUrl}}/api/ordenes/{{ordenId}}/validar-cierre" } },
+        { "name": "Listar repuestos de la orden", "request": { "method": "GET", "url": "{{baseUrl}}/api/ordenes/{{ordenId}}/repuestos" } },
+        { "name": "Registrar repuesto en la orden", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"repuestoId\": {{repuestoId}},\n  \"cantidad\": 1\n}" }, "url": "{{baseUrl}}/api/ordenes/{{ordenId}}/repuestos" } }
+      ]
+    },
+    {
+      "name": "09 - Facturación",
+      "description": "Rutas del facturacion-service expuestas por el Gateway en 8086.",
+      "item": [
+        {
+          "name": "Crear factura",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"ordenId\": {{ordenId}},\n  \"trabajos\": [\n    {\n      \"trabajoId\": 1,\n      \"precioUnitario\": 25.00\n    }\n  ]\n}" },
+            "url": "{{baseUrl}}/api/facturacion"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["const body = pm.response.json();", "const data = body.data || body;", "if (data.id) pm.collectionVariables.set('facturaId', data.id);"] } }]
+        },
+        { "name": "Listar facturas", "request": { "method": "GET", "url": "{{baseUrl}}/api/facturacion" } },
+        { "name": "Obtener factura", "request": { "method": "GET", "url": "{{baseUrl}}/api/facturacion/{{facturaId}}" } },
+        {
+          "name": "Actualizar factura",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"ordenId\": {{ordenId}},\n  \"trabajos\": [\n    {\n      \"trabajoId\": 1,\n      \"precioUnitario\": 30.00\n    }\n  ]\n}" },
+            "url": "{{baseUrl}}/api/facturacion/{{facturaId}}"
+          }
+        },
+        { "name": "Anular factura", "request": { "method": "PATCH", "url": "{{baseUrl}}/api/facturacion/{{facturaId}}/anular" } }
+      ]
+    },
+    {
+      "name": "10 - Notificaciones",
+      "item": [
+        {
+          "name": "Simular cita registrada",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"clienteId\": {{clienteId}},\n  \"fecha\": \"2026-10-15\",\n  \"hora\": \"10:30:00\"\n}" }, "url": "{{baseUrl}}/api/notificaciones/simular/cita-registrada" }
+        },
+        {
+          "name": "Simular vehículo listo",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"clienteId\": {{clienteId}},\n  \"placa\": \"ABC-123\"\n}" }, "url": "{{baseUrl}}/api/notificaciones/simular/vehiculo-listo" }
+        },
+        {
+          "name": "Simular factura generada",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"clienteId\": {{clienteId}},\n  \"total\": 150.75\n}" }, "url": "{{baseUrl}}/api/notificaciones/simular/factura-generada" }
+        },
+        { "name": "Listar notificaciones", "request": { "method": "GET", "url": "{{baseUrl}}/api/notificaciones" } },
+        { "name": "Obtener notificación", "request": { "method": "GET", "url": "{{baseUrl}}/api/notificaciones/{{notificacionId}}" } },
+        { "name": "Notificaciones por cliente", "request": { "method": "GET", "url": "{{baseUrl}}/api/notificaciones/cliente/{{clienteId}}" } }
+      ]
+    },
+    {
+      "name": "11 - Historial",
+      "item": [
+        { "name": "Listar historial", "request": { "method": "GET", "url": "{{baseUrl}}/api/historial" } },
+        { "name": "Obtener evento por id", "request": { "method": "GET", "url": "{{baseUrl}}/api/historial/1" } },
+        { "name": "Filtrar por tipo", "request": { "method": "GET", "url": "{{baseUrl}}/api/historial/tipo/CITA_CREADA" } },
+        { "name": "Filtrar por entidad", "request": { "method": "GET", "url": "{{baseUrl}}/api/historial/entidad/{{ordenId}}" } }
+      ]
+    },
+    {
+      "name": "12 - Casos de seguridad y error",
+      "item": [
+        {
+          "name": "Sin JWT - responde 401",
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/api/clientes" }
+        },
+        {
+          "name": "JWT inválido - responde 401",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "token-invalido", "type": "string" }] },
+            "method": "GET",
+            "url": "{{baseUrl}}/api/clientes"
+          }
+        },
+        {
+          "name": "Body inválido - responde 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"\"\n}" },
+            "url": "{{baseUrl}}/api/clientes"
+          }
+        },
+        {
+          "name": "Recurso inexistente - responde 404",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/clientes/999999" }
+        }
+      ]
+    }
+  ]
+}

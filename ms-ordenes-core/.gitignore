@@ -1,0 +1,21 @@
+# Compiled
+target/
+*.class
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar

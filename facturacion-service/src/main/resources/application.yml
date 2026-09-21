@@ -1,0 +1,40 @@
+server:
+  port: 8086
+
+spring:
+  application:
+    name: facturacion-service
+
+  datasource:
+    url: ${FACTURACION_DATASOURCE_URL:jdbc:h2:file:/app/data/facturacion_db;DB_CLOSE_ON_EXIT=FALSE}
+    driver-class-name: org.h2.Driver
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+clientes:
+  ordenes:
+    url: ${ORDENES_SERVICE_URL:http://localhost:8084}

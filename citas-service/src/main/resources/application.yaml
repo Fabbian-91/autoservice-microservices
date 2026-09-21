@@ -3,8 +3,8 @@ spring:
     name: citas-service
 
   datasource:
-    url: jdbc:sqlserver://localhost:1433;databaseName=citas_db;encrypt=true;trustServerCertificate=true
-    username: ${DB_USERNAME}
+    url: ${CITAS_DATASOURCE_URL:jdbc:sqlserver://localhost:1433;databaseName=citas_db;encrypt=true;trustServerCertificate=true}
+    username: ${DB_USERNAME:sa}
     password: ${DB_PASSWORD}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
@@ -17,31 +17,36 @@ spring:
         dialect: org.hibernate.dialect.SQLServerDialect
 
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: ${RABBITMQ_USERNAME}
-    password: ${RABBITMQ_PASSWORD}
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
 
 server:
   port: 8083
 
 microservices:
   clientes:
-    base-url: http://localhost:8082
+    base-url: ${CLIENTES_VEHICULOS_SERVICE_URL:http://localhost:8082}
   vehiculos:
-    base-url: http://localhost:8082
+    base-url: ${CLIENTES_VEHICULOS_SERVICE_URL:http://localhost:8082}
 
   kafka:
     topics:
-      cita-creada: cita-creada
+      citas-events: citas-events
 
   rabbitmq:
     queues:
-      cita-registrada: cita.registrada
+      cita-registrada: notificaciones.cita-registrada
     exchanges:
-      cita: cita.exchange
+      notificaciones: notificaciones.exchange
     bindings:
       cita-registrada: cita.registrada

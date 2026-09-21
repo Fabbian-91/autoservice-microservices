@@ -7,9 +7,9 @@ spring:
 
   datasource:
 
-    url: jdbc:sqlserver://localhost;instanceName=MSSQLSERVER;databaseName=clientes_vehiculos_db;encrypt=true;trustServerCertificate=true
+    url: ${CLIENTES_DATASOURCE_URL:jdbc:sqlserver://localhost;instanceName=MSSQLSERVER;databaseName=clientes_vehiculos_db;encrypt=true;trustServerCertificate=true}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-    username: ${DB_USERNAME}
+    username: ${DB_USERNAME:sa}
     password: ${DB_PASSWORD}
 
   # --- Configuracion de JPA / Hibernate ---
@@ -26,4 +26,3 @@ spring:
 logging:
   level:
     org.hibernate.SQL: debug
-

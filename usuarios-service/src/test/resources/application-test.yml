@@ -12,3 +12,10 @@ security:
   jwt:
     secret: TestSecretForAutoServiceUsuariosJwt2026AtLeast256Bits!!
     expiration-seconds: 1800
+
+app:
+  seed:
+    admin-password: admin123
+    recepcion-password: recepcion123
+    mecanico-password: mecanico123
+    facturacion-password: facturacion123

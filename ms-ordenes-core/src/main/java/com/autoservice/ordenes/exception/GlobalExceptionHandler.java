@@ -1,5 +1,6 @@
 package com.autoservice.ordenes.exception;
 
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleClienteNotFound(ClienteNoEncontradoException ex, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(buildApiError(HttpStatus.NOT_FOUND, ex.getMessage(), request));
+    }
+
+    @ExceptionHandler(RecursoNoEncontradoException.class)
+    public ResponseEntity<ApiError> handleRecursoNoEncontrado(RecursoNoEncontradoException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(buildApiError(HttpStatus.NOT_FOUND, ex.getMessage(), request));
+    }
+
+    @ExceptionHandler(ReglaNegocioException.class)
+    public ResponseEntity<ApiError> handleReglaNegocio(ReglaNegocioException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(buildApiError(HttpStatus.BAD_REQUEST, ex.getMessage(), request));
     }
 
     @ExceptionHandler(OrdenYaEntregadaException.class)
@@ -103,6 +116,14 @@ public class GlobalExceptionHandler {
         log.error("Microservicio externo no disponible: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(buildApiError(HttpStatus.SERVICE_UNAVAILABLE, mensaje, request));
+    }
+
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<ApiError> handleFeignException(FeignException ex, HttpServletRequest request) {
+        String mensaje = "Error al comunicarse con otro microservicio";
+        log.error("Error Feign: {}", ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                .body(buildApiError(HttpStatus.BAD_GATEWAY, mensaje, request));
     }
 
     @ExceptionHandler(Exception.class)

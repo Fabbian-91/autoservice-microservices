@@ -19,14 +19,20 @@ public interface OrdenMapper {
     @Mapping(target = "fechaEntrega", ignore = true)
     Orden toEntity(OrdenRequestDTO dto);
 
-    @Mapping(target = "citaId", source = "citaId")
+    @Mapping(target = "vehiculo", ignore = true)
     OrdenResponseDTO toResponse(Orden orden);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @BeanMapping(
+            nullValuePropertyMappingStrategy =
+                    NullValuePropertyMappingStrategy.IGNORE
+    )
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "diagnostico", ignore = true)
     @Mapping(target = "estado", ignore = true)
     @Mapping(target = "fechaIngreso", ignore = true)
     @Mapping(target = "fechaEntrega", ignore = true)
-    void updateEntity(OrdenRequestDTO dto, @MappingTarget Orden orden);
+    void updateEntity(
+            OrdenRequestDTO dto,
+            @MappingTarget Orden orden
+    );
 }
