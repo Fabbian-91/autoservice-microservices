@@ -15,7 +15,8 @@
     { "key": "citaId", "value": "1" },
     { "key": "ordenId", "value": "1" },
     { "key": "repuestoId", "value": "1" },
-    { "key": "notificacionId", "value": "1" }
+    { "key": "notificacionId", "value": "1" },
+    { "key": "facturaId", "value": "1" }
   ],
   "auth": {
     "type": "bearer",
@@ -312,7 +313,35 @@
       ]
     },
     {
-      "name": "09 - Notificaciones",
+      "name": "09 - Facturación",
+      "description": "Rutas del facturacion-service expuestas por el Gateway en 8086.",
+      "item": [
+        {
+          "name": "Crear factura",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"ordenId\": {{ordenId}},\n  \"trabajos\": [\n    {\n      \"trabajoId\": 1,\n      \"precioUnitario\": 25.00\n    }\n  ]\n}" },
+            "url": "{{baseUrl}}/api/facturacion"
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["const body = pm.response.json();", "const data = body.data || body;", "if (data.id) pm.collectionVariables.set('facturaId', data.id);"] } }]
+        },
+        { "name": "Listar facturas", "request": { "method": "GET", "url": "{{baseUrl}}/api/facturacion" } },
+        { "name": "Obtener factura", "request": { "method": "GET", "url": "{{baseUrl}}/api/facturacion/{{facturaId}}" } },
+        {
+          "name": "Actualizar factura",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"ordenId\": {{ordenId}},\n  \"trabajos\": [\n    {\n      \"trabajoId\": 1,\n      \"precioUnitario\": 30.00\n    }\n  ]\n}" },
+            "url": "{{baseUrl}}/api/facturacion/{{facturaId}}"
+          }
+        },
+        { "name": "Anular factura", "request": { "method": "PATCH", "url": "{{baseUrl}}/api/facturacion/{{facturaId}}/anular" } }
+      ]
+    },
+    {
+      "name": "10 - Notificaciones",
       "item": [
         {
           "name": "Simular cita registrada",
@@ -332,7 +361,7 @@
       ]
     },
     {
-      "name": "10 - Historial",
+      "name": "11 - Historial",
       "item": [
         { "name": "Listar historial", "request": { "method": "GET", "url": "{{baseUrl}}/api/historial" } },
         { "name": "Obtener evento por id", "request": { "method": "GET", "url": "{{baseUrl}}/api/historial/1" } },
@@ -341,7 +370,7 @@
       ]
     },
     {
-      "name": "11 - Casos de seguridad y error",
+      "name": "12 - Casos de seguridad y error",
       "item": [
         {
           "name": "Sin JWT - responde 401",

@@ -64,9 +64,9 @@ El módulo `ms-ordenes-core` de `develop` concentra las rutas de órdenes, traba
 - No se deben versionar `.env` ni credenciales reales. El archivo `.env.example` solo contiene nombres y valores de referencia.
 - Las rutas públicas son login, registro, actuator y health check. El resto requiere `Bearer token`.
 
-## Pendiente conocido
+## Facturación
 
-1. El Gateway tiene una ruta para facturación, pero `facturacion-service` todavía no forma parte de `develop`. La rama debe integrarse cuando el servicio tenga su implementación completa.
+`facturacion-service` forma parte del stack y se levanta en el puerto `8086` dentro de la red Docker. Consulta las órdenes en `ms-ordenes-core`, publica eventos en Kafka y notifica facturas generadas mediante RabbitMQ.
 
 ## Verificación mínima
 
@@ -92,4 +92,4 @@ Orden recomendado:
 1. `00 - Salud y disponibilidad`.
 2. `01 - Autenticación > Login administrador - guarda JWT`.
 3. Ejecutar las carpetas protegidas usando los IDs guardados en las variables.
-4. Ejecutar `11 - Casos de seguridad y error` para las evidencias de 401, 400 y 404.
+4. Ejecutar `12 - Casos de seguridad y error` para las evidencias de 401, 400 y 404.

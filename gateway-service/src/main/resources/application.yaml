@@ -84,7 +84,7 @@ spring:
             - id: facturacion-service
               uri: ${FACTURACION_SERVICE_URL:http://localhost:8086}
               predicates:
-                - Path=/api/facturas/**
+                - Path=/api/facturacion/**,/api/facturas/**
               filters:
                 - name: CircuitBreaker
                   args:
