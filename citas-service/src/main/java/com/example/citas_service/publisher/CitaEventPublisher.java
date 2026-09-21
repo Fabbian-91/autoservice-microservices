@@ -1,6 +1,6 @@
 package com.example.citas_service.publisher;
 
-import com.example.citas_service.event.CitaCreadaEvent;
+import com.example.citas_service.event.CitaKafkaEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,11 +14,12 @@ public class CitaEventPublisher {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    @Value("${microservices.kafka.topics.cita-creada}")
-    private String topicoCitaCreada;
+    @Value("${microservices.kafka.topics.citas-events}")
+    private String topicoCitasEvents;
 
-    public void publicarCitaCreada(CitaCreadaEvent event) {
-        log.info("Publicando evento CITA_CREADA en Kafka - citaId: {}", event.getCitaId());
-        kafkaTemplate.send(topicoCitaCreada, event.getCitaId().toString(), event);
+    public void publicarEvento(String tipoEvento, Long citaId, String descripcion) {
+        log.info("Publicando evento {} en Kafka - citaId: {}", tipoEvento, citaId);
+        CitaKafkaEvent event = new CitaKafkaEvent(tipoEvento, citaId, descripcion, java.time.LocalDateTime.now());
+        kafkaTemplate.send(topicoCitasEvents, citaId.toString(), event);
     }
 }
