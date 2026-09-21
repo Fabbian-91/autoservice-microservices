@@ -1,0 +1,29 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: ms-clientes-vehiculos
+
+  datasource:
+
+    url: jdbc:sqlserver://localhost;instanceName=MSSQLSERVER;databaseName=clientes_vehiculos_db;encrypt=true;trustServerCertificate=true
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  # --- Configuracion de JPA / Hibernate ---
+  jpa:
+    database-platform: org.hibernate.dialect.SQLServerDialect
+    hibernate:
+      # update: crea/ajusta las tablas si no existen, sin borrar datos entre reinicios.
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+
