@@ -186,4 +186,26 @@ public class GlobalExceptionHandler {
                 .status(status)
                 .body(error);
     }
+
+    @ExceptionHandler(FacturaAnuladaException.class)
+    public ResponseEntity<ApiError> handleFacturaAnulada(
+            FacturaAnuladaException ex
+    ) {
+        return construirError(
+                HttpStatus.CONFLICT,
+                ex.getMessage(),
+                null
+        );
+    }
+
+    @ExceptionHandler(OrdenNoPerteneceFacturaException.class)
+    public ResponseEntity<ApiError> handleOrdenNoPerteneceFactura(
+            OrdenNoPerteneceFacturaException ex
+    ) {
+        return construirError(
+                HttpStatus.CONFLICT,
+                ex.getMessage(),
+                null
+        );
+    }
 }

@@ -35,14 +35,31 @@ public class FacturaValidator {
         }
     }
 
+    public void validarOrdenFactura(Factura factura, Long ordenId) {
+
+        if (ordenId == null || !factura.getOrdenId().equals(ordenId)) {
+            throw new OrdenNoPerteneceFacturaException(
+                    factura.getId(),
+                    factura.getOrdenId(),
+                    ordenId
+            );
+        }
+    }
+
+    public void validarPuedeAnular(Factura factura) {
+
+        if (factura.getEstado().equals(EstadoFactura.ANULADA)) {
+            throw new FacturaAnuladaException(
+                    "La factura con id: %d ya se encuentra anulada."
+                            .formatted(factura.getId())
+            );
+        }
+    }
+
     public void validarPuedeModificarFactura(OrdenResponseDTO orden) {
 
         if (!ESTADO_FINALIZADA.equalsIgnoreCase(orden.getEstado())) {
             throw new OrdenNoFinalizadaException(orden.getId());
-        }
-
-        if (!facturaRepository.existsByOrdenId(orden.getId())) {
-            throw new OrdenNoEncontradaException("La orden con el id: d% no ha sido facturada.");
         }
     }
 

@@ -47,28 +47,23 @@ public class FacturaService {
     private final FacturaNotificacionPublisher facturaNotificacionPublisher;
     private final FacturaEventoPublisher facturaEventoPublisher;
 
-    /**
-     * Metodopara listar todas las facturas
-     *
-     * @return
-     */
+    @Transactional
     public List<FacturaResponseDTO> listarFacturas() {
+
         List<FacturaResponseDTO> facturas = _facturaRepository.findAll()
                 .stream()
                 .map(_facturaMapper::toResponse)
                 .toList();
+
         return facturas;
     }
 
-    /**
-     * Metodo para obtener la factura por id
-     *
-     * @param id
-     * @return
-     */
+    @Transactional
     public FacturaResponseDTO obtenerPorId(Long id) {
+
         Factura response = _facturaRepository.findById(id)
                 .orElseThrow(() -> new FacturaNoEncontradaException(id));
+
         return _facturaMapper.toResponse(response);
     }
 
@@ -252,28 +247,232 @@ public class FacturaService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public FacturaResponseDTO actualizarFactura(FacturaRequestDTO requestDTO,Long id){
+    public FacturaResponseDTO actualizarFactura(
+            FacturaRequestDTO requestDTO,
+            Long id
+    ) {
 
-        //Traer la traza de factura actualizar
-        Factura facturaActualizar=_facturaRepository.getReferenceById(id);
+        // Buscar la factura
+        Factura facturaActualizar = _facturaRepository
+                .findById(id)
+                .orElseThrow(() -> new FacturaNoEncontradaException(id));
 
-        //Validamos que la factura exista
-        if (facturaActualizar==null){
-            throw new FacturaNoEncontradaException(id);
-        }
 
-        //Validamos que la factura no esta anulada
+        // Validar que la factura no esté anulada
         _facturaValidator.validarEstadoFactura(facturaActualizar);
 
-        //Obtengo la orden asociada
-        OrdenResponseDTO ordenAsociada =_ordenesClient.obtenerOrden(requestDTO.getOrdenId());
 
-        if (ordenAsociada==null){
-            throw new OrdenNoEncontradaException("La orden con el id: d% no fue encontrada".formatted(requestDTO.getOrdenId()));
+        // Validar que no intenten cambiar la orden de la factura
+        _facturaValidator.validarOrdenFactura(
+                facturaActualizar,
+                requestDTO.getOrdenId()
+        );
+
+
+        // Obtener la orden mediante Feign
+        OrdenResponseDTO ordenAsociada =
+                _ordenesClient.obtenerOrden(requestDTO.getOrdenId());
+
+
+        // Validar que la orden exista
+        if (ordenAsociada == null) {
+            throw new OrdenNoEncontradaException(
+                    "La orden con el id: %d no fue encontrada"
+                            .formatted(requestDTO.getOrdenId())
+            );
         }
 
-        //Validar que la orden si se puede modificar
+
+        // Validar que la orden esté FINALIZADA
         _facturaValidator.validarPuedeModificarFactura(ordenAsociada);
 
+
+        // Obtener trabajos de la orden
+        List<TrabajoOrdenDTO> trabajosOrden =
+                _ordenesClient.obtenerTrabajos(ordenAsociada.getId());
+
+
+        // Validar que los trabajos estén terminados
+        _facturaValidator.validarTrabajos(
+                trabajosOrden,
+                ordenAsociada.getId()
+        );
+
+
+        // Validar precios enviados para los trabajos
+        _facturaValidator.validarPreciosTrabajos(
+                trabajosOrden,
+                requestDTO.getTrabajos()
+        );
+
+
+        // Obtener repuestos de la orden
+        List<RepuestoOrdenDTO> repuestosOrden =
+                _ordenesClient.obtenerRepuestos(ordenAsociada.getId());
+
+
+        // Validar repuestos
+        _facturaValidator.validarRepuestos(
+                repuestosOrden,
+                ordenAsociada.getId()
+        );
+
+
+        // Crear mapa trabajoId -> precio
+        Map<Long, BigDecimal> preciosTrabajos =
+                requestDTO.getTrabajos() == null
+                        ? Map.of()
+                        : requestDTO.getTrabajos()
+                        .stream()
+                        .collect(Collectors.toMap(
+                                TrabajoFacturaRequestDTO::getTrabajoId,
+                                TrabajoFacturaRequestDTO::getPrecioUnitario
+                        ));
+
+
+        // Nuevos detalles de factura
+        List<DetalleFactura> nuevosDetalles = new ArrayList<>();
+
+
+        // Crear detalles de TRABAJOS
+        for (TrabajoOrdenDTO trabajo : trabajosOrden) {
+
+            BigDecimal precioUnitario =
+                    preciosTrabajos.get(trabajo.getId());
+
+            if (precioUnitario == null) {
+                throw new PrecioTrabajoException(
+                        "No se indicó precio para el trabajo con id: "
+                                + trabajo.getId()
+                );
+            }
+
+
+            int cantidad = 1;
+
+            BigDecimal subtotalDetalle =
+                    precioUnitario.multiply(
+                            BigDecimal.valueOf(cantidad)
+                    );
+
+
+            DetalleFactura detalleTrabajo =
+                    DetalleFactura.builder()
+                            .tipo(TipoDetalle.TRABAJO)
+                            .descripcion(trabajo.getDescripcion())
+                            .cantidad(cantidad)
+                            .precioUnitario(precioUnitario)
+                            .subtotal(subtotalDetalle)
+                            .build();
+
+
+            nuevosDetalles.add(detalleTrabajo);
+        }
+
+
+        // Crear detalles de REPUESTOS
+        for (RepuestoOrdenDTO repuesto : repuestosOrden) {
+
+            BigDecimal cantidad =
+                    BigDecimal.valueOf(repuesto.getCantidad());
+
+
+            BigDecimal subtotalDetalle =
+                    repuesto.getPrecioUnitario()
+                            .multiply(cantidad);
+
+
+            DetalleFactura detalleRepuesto =
+                    DetalleFactura.builder()
+                            .tipo(TipoDetalle.REPUESTO)
+                            .descripcion(
+                                    "Repuesto #" + repuesto.getRepuestoId()
+                            )
+                            .cantidad(repuesto.getCantidad())
+                            .precioUnitario(repuesto.getPrecioUnitario())
+                            .subtotal(subtotalDetalle)
+                            .build();
+
+
+            nuevosDetalles.add(detalleRepuesto);
+        }
+
+
+        // Calcular subtotal de la factura
+        BigDecimal subtotal =
+                nuevosDetalles.stream()
+                        .map(DetalleFactura::getSubtotal)
+                        .reduce(
+                                BigDecimal.ZERO,
+                                BigDecimal::add
+                        );
+
+
+        // Calcular impuesto
+        BigDecimal impuesto =
+                subtotal.multiply(TASA_IMPUESTO);
+
+
+        // Calcular total
+        BigDecimal total =
+                subtotal.add(impuesto);
+
+
+        // Asociar los nuevos detalles con la factura existente
+        nuevosDetalles.forEach(
+                detalle -> detalle.setFactura(facturaActualizar)
+        );
+
+
+        // Reemplazar los detalles anteriores
+        facturaActualizar.getDetalles().clear();
+        facturaActualizar.getDetalles().addAll(nuevosDetalles);
+
+
+        // Actualizar los valores calculados
+        facturaActualizar.setClienteId(
+                ordenAsociada.getClienteId()
+        );
+
+        facturaActualizar.setSubtotal(subtotal);
+        facturaActualizar.setImpuesto(impuesto);
+        facturaActualizar.setTotal(total);
+
+
+        // Guardar cambios
+        Factura facturaActualizada =
+                _facturaRepository.save(facturaActualizar);
+
+
+        // Retornar DTO
+        return _facturaMapper.toResponse(facturaActualizada);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public FacturaResponseDTO anularFactura(Long id) {
+
+        // Buscar factura
+        Factura factura = _facturaRepository
+                .findById(id)
+                .orElseThrow(
+                        () -> new FacturaNoEncontradaException(id)
+                );
+
+
+        // Validar que todavía se pueda anular
+        _facturaValidator.validarPuedeAnular(factura);
+
+
+        // Cambiar estado
+        factura.setEstado(EstadoFactura.ANULADA);
+
+
+        // Guardar cambios
+        Factura facturaAnulada =
+                _facturaRepository.save(factura);
+
+
+        // Retornar respuesta
+        return _facturaMapper.toResponse(facturaAnulada);
     }
 }
