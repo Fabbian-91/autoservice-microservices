@@ -6,10 +6,10 @@ spring:
     name: facturacion-service
 
   datasource:
-    url: jdbc:h2:file:./data/facturacion_db
+    url: ${FACTURACION_DATASOURCE_URL:jdbc:h2:file:/app/data/facturacion_db;DB_CLOSE_ON_EXIT=FALSE}
     driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
 
   jpa:
     hibernate:
@@ -23,13 +23,13 @@ spring:
       path: /h2-console
 
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -37,4 +37,4 @@ spring:
 
 clientes:
   ordenes:
-    url: http://localhost:8084
+    url: ${ORDENES_SERVICE_URL:http://localhost:8084}

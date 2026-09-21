@@ -3,9 +3,9 @@ spring:
     name: ms-historial-service
 
   datasource:
-    url: "jdbc:sqlserver://localhost:1433;databaseName=historial_db;encrypt=true;trustServerCertificate=true"
-    username: sa
-    password:
+    url: "${HISTORIAL_DATASOURCE_URL:jdbc:sqlserver://localhost:1433;databaseName=historial_db;encrypt=true;trustServerCertificate=true}"
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
   jpa:
@@ -18,7 +18,7 @@ spring:
         format_sql: true
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
 
     consumer:
       group-id: historial-group

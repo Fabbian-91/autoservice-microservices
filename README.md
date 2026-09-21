@@ -65,3 +65,9 @@ hasta la reparación, la facturación y la entrega al cliente.
 Esta rama agrega `usuarios-service`. El servicio usa la base de datos
 `usuarios_db`, emite JWT compatibles con el Gateway y expone las operaciones
 de registro, consulta, edición, roles, desactivación y validación de tokens.
+
+## Integración
+
+La guía de conexión local y Docker está en [`docs/integracion.md`](docs/integracion.md).
+Incluye las variables de entorno, la red compartida, los comandos de arranque y
+las decisiones pendientes para integrar órdenes y facturación.
