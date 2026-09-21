@@ -45,13 +45,14 @@ docker compose up -d --build
 docker compose ps
 ```
 
-Con el `docker-compose.yml` del proyecto quedan conectados el Gateway, los ocho microservicios disponibles y sus dependencias de MySQL, RabbitMQ, Kafka y H2. Los microservicios que usan SQL Server se conectan al contenedor `sqlserver-ms-usuarios` existente en Docker, agregado a la red `autoservice-net` con el alias `sqlserver`. La colección de Postman usa `http://localhost:18000` como `baseUrl` para este despliegue.
+Con el `docker-compose.yml` del proyecto quedan conectados el Gateway, los ocho microservicios disponibles y sus dependencias de SQL Server, MySQL, RabbitMQ, Kafka y H2. El servicio `sqlserver-init` crea automáticamente las bases de datos necesarias antes de iniciar los microservicios que usan SQL Server. No depende de contenedores ni redes creados previamente. La colección de Postman usa `http://localhost:18000` como `baseUrl` para este despliegue.
 
-En este equipo, la conexión al SQL Server existente se prepara una sola vez con:
+El SQL Server se publica en `localhost:11433` para consultas manuales. La clave de `sa` se configura mediante `DB_PASSWORD` en `.env`; si no se define, Compose utiliza el valor de desarrollo indicado en el archivo.
 
 ```bash
-docker network connect --alias sqlserver autoservice-net sqlserver-ms-usuarios
-DB_PASSWORD='<password-del-SQL-Server>' docker compose up -d --build
+cp .env.example .env
+./mvnw -q -DskipTests package
+docker compose up -d --build
 ```
 
 El microservicio `ordenes-service` se publica internamente en `8089` como `ordenes-detalle-service`, porque `ms-ordenes-core` ya usa el puerto `8084`. El Gateway enruta automáticamente los endpoints de trabajos, mecánicos y repuestos hacia ese servicio.
@@ -63,9 +64,7 @@ El microservicio `ordenes-service` se publica internamente en `8089` como `orden
 - No se deben versionar `.env` ni credenciales reales. El archivo `.env.example` solo contiene nombres y valores de referencia.
 - Las rutas públicas son login, registro, actuator y health check. El resto requiere `Bearer token`.
 
-## Pendientes de integración
-
-Antes de levantar todo el sistema en un único Compose se deben resolver dos decisiones del repositorio:
+## Pendiente conocido
 
 1. El Gateway tiene una ruta para facturación, pero `facturacion-service` todavía no forma parte de `develop`. La rama debe integrarse cuando el servicio tenga su implementación completa.
 

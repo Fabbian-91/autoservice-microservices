@@ -1,4 +1,41 @@
 services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
+    ports:
+      - "${SQLSERVER_HOST_PORT:-11433}:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: ${DB_PASSWORD:-AutoService2026!Sql}
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q \"SELECT 1\" -b -o /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    networks:
+      - autoservice-net
+    restart: unless-stopped
+
+  sqlserver-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
+    environment:
+      SQLSERVER_HOST: sqlserver
+      MSSQL_SA_PASSWORD: ${DB_PASSWORD:-AutoService2026!Sql}
+    volumes:
+      - ./docker/sqlserver-init.sh:/docker/sqlserver-init.sh:ro
+    entrypoint: ["/bin/bash", "/docker/sqlserver-init.sh"]
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - autoservice-net
+    restart: "no"
+
   usuarios-db:
     image: mysql:8.4
     environment:
@@ -102,6 +139,9 @@ services:
       CLIENTES_DATASOURCE_URL: jdbc:sqlserver://sqlserver:1433;databaseName=clientes_vehiculos_db;encrypt=false;trustServerCertificate=true
       DB_USERNAME: sa
       DB_PASSWORD: ${DB_PASSWORD:-AutoService2026!Sql}
+    depends_on:
+      sqlserver-init:
+        condition: service_completed_successfully
     networks:
       - autoservice-net
     restart: unless-stopped
@@ -122,6 +162,8 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       CLIENTES_VEHICULOS_SERVICE_URL: http://clientes-vehiculos-service:8082
     depends_on:
+      sqlserver-init:
+        condition: service_completed_successfully
       clientes-vehiculos-service:
         condition: service_started
       rabbitmq:
@@ -143,6 +185,8 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-AutoService2026!Sql}
       CLIENTES_VEHICULOS_SERVICE_URL: http://clientes-vehiculos-service:8082
     depends_on:
+      sqlserver-init:
+        condition: service_completed_successfully
       clientes-vehiculos-service:
         condition: service_started
     networks:
@@ -200,6 +244,8 @@ services:
       RABBITMQ_USERNAME: ${RABBITMQ_USERNAME:-guest}
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-guest}
     depends_on:
+      sqlserver-init:
+        condition: service_completed_successfully
       rabbitmq:
         condition: service_healthy
     networks:
@@ -217,6 +263,8 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-AutoService2026!Sql}
       KAFKA_BOOTSTRAP_SERVERS: kafka:29092
     depends_on:
+      sqlserver-init:
+        condition: service_completed_successfully
       kafka:
         condition: service_started
     networks:
@@ -260,6 +308,7 @@ services:
     restart: unless-stopped
 
 volumes:
+  sqlserver_data:
   usuarios_db_data:
   kafka_data:
   inventario_data:
