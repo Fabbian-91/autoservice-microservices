@@ -23,7 +23,8 @@ Dentro de la red `autoservice-net` no se debe usar `localhost` para alcanzar otr
 USUARIOS_SERVICE_URL=http://usuarios-service:8081
 CLIENTES_VEHICULOS_SERVICE_URL=http://clientes-vehiculos-service:8082
 CITAS_SERVICE_URL=http://citas-service:8083
-ORDENES_SERVICE_URL=http://ordenes-service:8084
+ORDENES_SERVICE_URL=http://ms-ordenes-core:8084
+ORDENES_DETALLE_SERVICE_URL=http://ordenes-detalle-service:8089
 INVENTARIO_SERVICE_URL=http://inventario-service:8085
 FACTURACION_SERVICE_URL=http://facturacion-service:8086
 NOTIFICACIONES_SERVICE_URL=http://notificaciones-service:8087
@@ -34,22 +35,26 @@ KAFKA_BOOTSTRAP_SERVERS=kafka:29092
 
 El Gateway expone el puerto `8080`. Los puertos de los microservicios deben quedar internos en el despliegue y publicarse solo cuando se necesiten para pruebas.
 
-### Gateway de evidencias
+### Despliegue completo y evidencias
 
-Para probar la seguridad sin ocupar el `api-gateway` que ya esté ejecutándose en el equipo, se puede usar el puerto `18080`:
+Para probar la seguridad sin ocupar el `api-gateway` que ya esté ejecutándose en el equipo, el Compose completo publica el Gateway en el puerto `18000`:
 
 ```bash
-bash gateway-service/mvnw -q -f gateway-service/pom.xml -DskipTests package
-docker build -t autoservice-gateway-evidence:latest gateway-service
-docker run -d --name autoservice-gateway-evidence \
-  --network autoservice-usuarios-evidence \
-  -p 18080:8080 \
-  -e JWT_SECRET="$JWT_SECRET" \
-  -e USUARIOS_SERVICE_URL=http://autoservice-usuarios-evidence:8081 \
-  autoservice-gateway-evidence:latest
+./mvnw -q -DskipTests package
+docker compose up -d --build
+docker compose ps
 ```
 
-Con este contenedor quedan conectados el Gateway y `usuarios-service`. Las demás rutas aparecen como no disponibles hasta que sus microservicios se levanten en la misma red. La colección de Postman ya usa `http://localhost:18080` como `baseUrl` para estas evidencias.
+Con el `docker-compose.yml` del proyecto quedan conectados el Gateway, los ocho microservicios disponibles y sus dependencias de MySQL, RabbitMQ, Kafka y H2. Los microservicios que usan SQL Server se conectan al contenedor `sqlserver-ms-usuarios` existente en Docker, agregado a la red `autoservice-net` con el alias `sqlserver`. La colección de Postman usa `http://localhost:18000` como `baseUrl` para este despliegue.
+
+En este equipo, la conexión al SQL Server existente se prepara una sola vez con:
+
+```bash
+docker network connect --alias sqlserver autoservice-net sqlserver-ms-usuarios
+DB_PASSWORD='<password-del-SQL-Server>' docker compose up -d --build
+```
+
+El microservicio `ordenes-service` se publica internamente en `8089` como `ordenes-detalle-service`, porque `ms-ordenes-core` ya usa el puerto `8084`. El Gateway enruta automáticamente los endpoints de trabajos, mecánicos y repuestos hacia ese servicio.
 
 ## Seguridad
 
@@ -62,8 +67,7 @@ Con este contenedor quedan conectados el Gateway y `usuarios-service`. Las demá
 
 Antes de levantar todo el sistema en un único Compose se deben resolver dos decisiones del repositorio:
 
-1. `ms-ordenes-core` y `ordenes-service` usan el mismo puerto `8084` y comparten rutas `/api/ordenes`. Debe definirse cuál será el módulo principal o separar claramente sus responsabilidades y puertos.
-2. El Gateway tiene una ruta para facturación, pero `facturacion-service` todavía no forma parte de `develop`. La rama debe integrarse cuando el servicio tenga su implementación completa.
+1. El Gateway tiene una ruta para facturación, pero `facturacion-service` todavía no forma parte de `develop`. La rama debe integrarse cuando el servicio tenga su implementación completa.
 
 ## Verificación mínima
 
@@ -72,7 +76,7 @@ Antes de levantar todo el sistema en un único Compose se deben resolver dos dec
 curl http://localhost:8080/actuator/health
 curl -X POST http://localhost:8080/api/auth/login \
   -H 'Content-Type: application/json' \
-  -d '{"correo":"admin@autoservice.local","contrasena":"admin123"}'
+  -d '{"usuario":"admin@autoservice.local","password":"admin123"}'
 ```
 
 Las pruebas de endpoints protegidos deben ejecutarse usando el token devuelto por el login.
@@ -80,8 +84,8 @@ Las pruebas de endpoints protegidos deben ejecutarse usando el token devuelto po
 ## Colección de Postman
 
 Importar [`AutoService-Gateway.postman_collection.json`](AutoService-Gateway.postman_collection.json).
-La variable `baseUrl` viene configurada para el Gateway de evidencias en
-`http://localhost:18080`; si se levanta en el puerto normal, cambiarla a
+La variable `baseUrl` viene configurada para el Gateway completo en
+`http://localhost:18000`; si se levanta en el puerto normal, cambiarla a
 `http://localhost:8080`.
 
 Orden recomendado:
