@@ -5,7 +5,7 @@ spring:
   datasource:
     url: "jdbc:sqlserver://localhost:1433;databaseName=historial_db;encrypt=true;trustServerCertificate=true"
     username: sa
-    password: crpp
+    password:
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
   jpa:
