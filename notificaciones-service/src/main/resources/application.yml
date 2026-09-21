@@ -6,9 +6,9 @@ spring:
     name: notificaciones-service
 
   datasource:
-    url: jdbc:sqlserver://localhost;instanceName=SQLEXPRESS;databaseName=notificaciones_db;encrypt=true;trustServerCertificate=true
+    url: ${NOTIFICACIONES_DATASOURCE_URL:jdbc:sqlserver://localhost:1433;databaseName=notificaciones_db;encrypt=true;trustServerCertificate=true}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-    username: ${DB_USERNAME}
+    username: ${DB_USERNAME:sa}
     password: ${DB_PASSWORD}
 
   jpa:
@@ -18,10 +18,10 @@ spring:
     show-sql: true
 
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: ${RABBITMQ_USERNAME}
-    password: ${RABBITMQ_PASSWORD}
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
 
 logging:
   level:

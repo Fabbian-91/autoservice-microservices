@@ -12,7 +12,7 @@ spring:
           #Rutas de los microservicio con circuit breaker y fallback
           routes:
             - id: usuarios-service
-              uri: http://localhost:8081
+              uri: ${USUARIOS_SERVICE_URL:http://localhost:8081}
               predicates:
                 - Path=/api/usuarios/**,/api/auth/**
               filters:
@@ -26,7 +26,7 @@ spring:
                     rate-limiter: "#{@inMemoryRateLimiter}"
 
             - id: clientes-vehiculos-service
-              uri: http://localhost:8082
+              uri: ${CLIENTES_VEHICULOS_SERVICE_URL:http://localhost:8082}
               predicates:
                 - Path=/api/clientes/**,/api/vehiculos/**
               filters:
@@ -40,7 +40,7 @@ spring:
                     rate-limiter: "#{@inMemoryRateLimiter}"
 
             - id: citas-service
-              uri: http://localhost:8083
+              uri: ${CITAS_SERVICE_URL:http://localhost:8083}
               predicates:
                 - Path=/api/citas/**
               filters:
@@ -54,7 +54,7 @@ spring:
                     rate-limiter: "#{@inMemoryRateLimiter}"
 
             - id: ordenes-service
-              uri: http://localhost:8084
+              uri: ${ORDENES_SERVICE_URL:http://localhost:8084}
               predicates:
                 - Path=/api/ordenes/**
               filters:
@@ -68,7 +68,7 @@ spring:
                     rate-limiter: "#{@inMemoryRateLimiter}"
 
             - id: inventario-service
-              uri: http://localhost:8085
+              uri: ${INVENTARIO_SERVICE_URL:http://localhost:8085}
               predicates:
                 - Path=/api/inventario/**,/api/repuestos/**
               filters:
@@ -82,7 +82,7 @@ spring:
                     rate-limiter: "#{@inMemoryRateLimiter}"
 
             - id: facturacion-service
-              uri: http://localhost:8086
+              uri: ${FACTURACION_SERVICE_URL:http://localhost:8086}
               predicates:
                 - Path=/api/facturas/**
               filters:
@@ -96,7 +96,7 @@ spring:
                     rate-limiter: "#{@inMemoryRateLimiter}"
 
             - id: notificaciones-service
-              uri: http://localhost:8087
+              uri: ${NOTIFICACIONES_SERVICE_URL:http://localhost:8087}
               predicates:
                 - Path=/api/notificaciones/**
               filters:
@@ -110,7 +110,7 @@ spring:
                     rate-limiter: "#{@inMemoryRateLimiter}"
 
             - id: historial-service
-              uri: http://localhost:8088
+              uri: ${HISTORIAL_SERVICE_URL:http://localhost:8088}
               predicates:
                 - Path=/api/historial/**
               filters:
@@ -158,21 +158,21 @@ jwt:
 # Configuración de los microservicios
 services:
   usuarios:
-    url: http://localhost:8081
+    url: ${USUARIOS_SERVICE_URL:http://localhost:8081}
   clientes-vehiculos:
-    url: http://localhost:8082
+    url: ${CLIENTES_VEHICULOS_SERVICE_URL:http://localhost:8082}
   citas:
-    url: http://localhost:8083
+    url: ${CITAS_SERVICE_URL:http://localhost:8083}
   ordenes:
-    url: http://localhost:8084
+    url: ${ORDENES_SERVICE_URL:http://localhost:8084}
   inventario:
-    url: http://localhost:8085
+    url: ${INVENTARIO_SERVICE_URL:http://localhost:8085}
   facturacion:
-    url: http://localhost:8086
+    url: ${FACTURACION_SERVICE_URL:http://localhost:8086}
   notificaciones:
-    url: http://localhost:8087
+    url: ${NOTIFICACIONES_SERVICE_URL:http://localhost:8087}
   historial:
-    url: http://localhost:8088
+    url: ${HISTORIAL_SERVICE_URL:http://localhost:8088}
 
 #Actuator
 management:

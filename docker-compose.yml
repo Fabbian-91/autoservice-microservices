@@ -2,18 +2,23 @@ services:
 
     rabbitmq:
         image: rabbitmq:3.13-management
-        container_name: rabbitmq-notificaciones
         ports:
             - "5672:5672"
             - "15672:15672"
         environment:
-            RABBITMQ_DEFAULT_USER: guest
-            RABBITMQ_DEFAULT_PASS: guest
+            RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME:-guest}
+            RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+        healthcheck:
+            test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 10
+        networks:
+            - autoservice-net
         restart: unless-stopped
 
     kafka:
         image: apache/kafka:latest
-        container_name: autoservice-kafka
         hostname: kafka
 
         ports:
@@ -36,6 +41,8 @@ services:
         volumes:
             - kafka_data:/var/lib/kafka/data
 
+        networks:
+            - autoservice-net
         restart: unless-stopped
 
     kafka-ui:
@@ -52,8 +59,15 @@ services:
         depends_on:
             - kafka
 
+        networks:
+            - autoservice-net
+
         restart: unless-stopped
 
 
 volumes:
     kafka_data:
+
+networks:
+    autoservice-net:
+        name: autoservice-net

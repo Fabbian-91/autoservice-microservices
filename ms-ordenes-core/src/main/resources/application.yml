@@ -6,9 +6,9 @@ spring:
     name: ordenes-service
 
   datasource:
-    url: jdbc:sqlserver://localhost;databaseName=ordenesdb;encrypt=true;trustServerCertificate=true
+    url: ${ORDENES_DATASOURCE_URL:jdbc:sqlserver://localhost:1433;databaseName=ordenesdb;encrypt=true;trustServerCertificate=true}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-    username: ${DB_USERNAME}
+    username: ${DB_USERNAME:sa}
     password: ${DB_PASSWORD}
 
   jpa:
@@ -23,9 +23,9 @@ spring:
 # para otros microservicios
 services:
   vehiculos:
-    url: http://localhost:8082
+    url: ${CLIENTES_VEHICULOS_SERVICE_URL:http://localhost:8082}
   clientes:
-    url: http://localhost:8082
+    url: ${CLIENTES_VEHICULOS_SERVICE_URL:http://localhost:8082}
 
 logging:
   level:
