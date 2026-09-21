@@ -51,9 +51,10 @@ El SQL Server se publica en `localhost:11433` para consultas manuales. La clave 
 
 ```bash
 cp .env.example .env
-./mvnw -q -DskipTests package
 docker compose up -d --build
 ```
+
+Los Dockerfiles compilan cada microservicio dentro de su propia imagen; no es necesario tener artefactos `target/` generados antes de ejecutar Compose.
 
 El microservicio `ordenes-service` se publica internamente en `8089` como `ordenes-detalle-service`, porque `ms-ordenes-core` ya usa el puerto `8084`. El Gateway enruta automáticamente los endpoints de trabajos, mecánicos y repuestos hacia ese servicio.
 
