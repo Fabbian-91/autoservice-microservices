@@ -20,12 +20,27 @@ spring:
       hibernate:
         format_sql: true
 
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
 # para otros microservicios
 services:
   vehiculos:
     url: http://localhost:8082
   clientes:
     url: http://localhost:8082
+  usuarios:
+    url: ${USUARIOS_URL:http://localhost:8081}
+  inventario:
+    url: ${INVENTARIO_URL:http://localhost:8085}
+
+app:
+  kafka:
+    topic:
+      ordenes: ordenes.eventos
 
 logging:
   level:
