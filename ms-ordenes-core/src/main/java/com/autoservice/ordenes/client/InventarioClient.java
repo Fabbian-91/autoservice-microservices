@@ -3,9 +3,7 @@ package com.autoservice.ordenes.client;
 import com.autoservice.ordenes.dto.RepuestoInventarioResponse;
 import com.autoservice.ordenes.dto.SalidaInventarioRequest;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient(
         name = "inventario-service",
@@ -13,9 +11,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 )
 public interface InventarioClient {
 
-    @PostMapping("/api/repuestos/{id}/salida")
-    RepuestoInventarioResponse descontarStock(
-            @PathVariable Long id,
+    @GetMapping("/api/repuestos/{id}")
+    RepuestoInventarioResponse obtenerRepuesto(
+            @PathVariable("id") Long id
+    );
+
+    @PostMapping("/api/inventario/repuestos/{id}/salidas")
+    void descontarStock(
+            @PathVariable("id") Long id,
             @RequestBody SalidaInventarioRequest request
     );
 }

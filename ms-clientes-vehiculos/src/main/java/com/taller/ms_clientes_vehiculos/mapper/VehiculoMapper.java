@@ -1,32 +1,29 @@
 package com.taller.ms_clientes_vehiculos.mapper;
 
-
 import com.taller.ms_clientes_vehiculos.dto.VehiculoRequestDTO;
 import com.taller.ms_clientes_vehiculos.dto.VehiculoResponseDTO;
 import com.taller.ms_clientes_vehiculos.model.Vehiculo;
 import org.mapstruct.*;
+
 import java.util.List;
 
-
-@Mapper(componentModel = "spring")//para que spring lo reconozca como un bean y lo inyecte en el servicio
+@Mapper(componentModel = "spring")
 public interface VehiculoMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "cliente", ignore = true)
     Vehiculo toEntity(VehiculoRequestDTO dto);
 
+    @Mapping(source = "cliente.id", target = "clienteId")
     VehiculoResponseDTO toResponseDTO(Vehiculo vehiculo);
 
-
-    //le digo que si el DTO tiene un valor nulo, no se debe actualizar el valor correspondiente en la entidad
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "cliente", ignore = true)
+    @Mapping(target = "id", ignore = true)
     void updateEntity(
-            //que mapee el DTO a la entidad existente, y no cree una nueva
             @MappingTarget Vehiculo vehiculo,
             VehiculoRequestDTO dto
     );
 
-    // para mapear una lista de entidades a una lista de DTO
     List<VehiculoResponseDTO> toResponseDTOList(List<Vehiculo> vehiculos);
-
-
 }
