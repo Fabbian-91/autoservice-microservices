@@ -1,0 +1,251 @@
+server:
+  port: ${SERVER_PORT}
+
+spring:
+  config:
+    import: optional:file:gateway-service/.env[.properties]
+
+  application:
+    name: gateway-service
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+
+          # Rutas de los microservicios con Circuit Breaker y fallback
+          routes:
+            - id: usuarios-service
+              uri: ${USUARIOS_SERVICE_URL}
+              predicates:
+                - Path=/api/usuarios/**,/api/auth/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: usuariosCB
+                    fallbackUri: forward:/fallback/usuarios
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userKeyResolver}"
+                    rate-limiter: "#{@inMemoryRateLimiter}"
+
+            - id: clientes-vehiculos-service
+              uri: ${CLIENTES_VEHICULOS_SERVICE_URL}
+              predicates:
+                - Path=/api/clientes/**,/api/vehiculos/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: clientesCB
+                    fallbackUri: forward:/fallback/clientes
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userKeyResolver}"
+                    rate-limiter: "#{@inMemoryRateLimiter}"
+
+            - id: citas-service
+              uri: ${CITAS_SERVICE_URL}
+              predicates:
+                - Path=/api/citas/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: citasCB
+                    fallbackUri: forward:/fallback/citas
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userKeyResolver}"
+                    rate-limiter: "#{@inMemoryRateLimiter}"
+
+            - id: ordenes-service
+              uri: ${ORDENES_SERVICE_URL}
+              predicates:
+                - Path=/api/ordenes/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: ordenesCB
+                    fallbackUri: forward:/fallback/ordenes
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userKeyResolver}"
+                    rate-limiter: "#{@inMemoryRateLimiter}"
+
+            - id: inventario-service
+              uri: ${INVENTARIO_SERVICE_URL}
+              predicates:
+                - Path=/api/inventario/**,/api/repuestos/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: inventarioCB
+                    fallbackUri: forward:/fallback/inventario
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userKeyResolver}"
+                    rate-limiter: "#{@inMemoryRateLimiter}"
+
+            - id: facturacion-service
+              uri: ${FACTURACION_SERVICE_URL}
+              predicates:
+                - Path=/api/facturas/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: facturacionCB
+                    fallbackUri: forward:/fallback/facturacion
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userKeyResolver}"
+                    rate-limiter: "#{@inMemoryRateLimiter}"
+
+            - id: notificaciones-service
+              uri: ${NOTIFICACIONES_SERVICE_URL}
+              predicates:
+                - Path=/api/notificaciones/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: notificacionesCB
+                    fallbackUri: forward:/fallback/notificaciones
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userKeyResolver}"
+                    rate-limiter: "#{@inMemoryRateLimiter}"
+
+            - id: historial-service
+              uri: ${HISTORIAL_SERVICE_URL}
+              predicates:
+                - Path=/api/historial/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: historialCB
+                    fallbackUri: forward:/fallback/historial
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userKeyResolver}"
+                    rate-limiter: "#{@inMemoryRateLimiter}"
+
+          # CORS global
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins:
+                  - "*"
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - PATCH
+                  - DELETE
+                  - OPTIONS
+                allowedHeaders:
+                  - "*"
+                allowCredentials: false
+                maxAge: 3600
+
+  # Configuración de validación JWT
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          secret-key: ${JWT_SECRET}
+
+
+# JWT - Clave secreta compartida con usuarios-service
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 86400000
+
+
+# URLs de los microservicios
+services:
+  usuarios:
+    url: ${USUARIOS_SERVICE_URL}
+
+  clientes-vehiculos:
+    url: ${CLIENTES_VEHICULOS_SERVICE_URL}
+
+  citas:
+    url: ${CITAS_SERVICE_URL}
+
+  ordenes:
+    url: ${ORDENES_SERVICE_URL}
+
+  inventario:
+    url: ${INVENTARIO_SERVICE_URL}
+
+  facturacion:
+    url: ${FACTURACION_SERVICE_URL}
+
+  notificaciones:
+    url: ${NOTIFICACIONES_SERVICE_URL}
+
+  historial:
+    url: ${HISTORIAL_SERVICE_URL}
+
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway,circuitbreakers,circuitbreakerevents
+
+  endpoint:
+    health:
+      show-details: always
+
+  health:
+    circuitbreakers:
+      enabled: true
+    discovery:
+      enabled: false
+
+
+# Logging
+logging:
+  level:
+    org.springframework.cloud.gateway: info
+    org.springframework.security: info
+    com.autoservice.gateway: debug
+
+
+# Resilience4J y Circuit Breaker
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+
+        # Ventana deslizante: evalúa las últimas 10 peticiones
+        slidingWindowSize: 10
+
+        # Mínimo de peticiones para calcular la tasa de error
+        minimumNumberOfCalls: 5
+
+        # Si el 50% de las peticiones fallan, abre el Circuit Breaker
+        failureRateThreshold: 50
+
+        # Tiempo que permanece abierto
+        waitDurationInOpenState: 10s
+
+        # Peticiones permitidas en HALF_OPEN
+        permittedNumberOfCallsInHalfOpenState: 3
+
+        # Ventana basada en cantidad de peticiones
+        slidingWindowType: COUNT_BASED
+
+        # Registrar métricas
+        registerHealthIndicator: true
+
+        # Errores que no cuentan como falla del servicio
+        ignoreExceptions:
+          - org.springframework.web.server.ResponseStatusException
+
+  # Timeout para las peticiones
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 5s
+        cancelRunningFuture: true

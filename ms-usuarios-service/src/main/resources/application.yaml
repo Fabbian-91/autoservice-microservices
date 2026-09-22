@@ -1,0 +1,42 @@
+server:
+  port: ${SERVER_PORT}
+
+spring:
+  config:
+    import: optional:file:usuarios-service/.env[.properties]
+
+  application:
+    name: usuarios-service
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+security:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration-seconds: ${JWT_EXPIRATION_SECONDS}
+
+app:
+  seed:
+    admin-password: ${SEED_ADMIN_PASSWORD}
+    recepcion-password: ${SEED_RECEPCION_PASSWORD}
+    mecanico-password: ${SEED_MECANICO_PASSWORD}
+    facturacion-password: ${SEED_FACTURACION_PASSWORD}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+  endpoint:
+    health:
+      show-details: always

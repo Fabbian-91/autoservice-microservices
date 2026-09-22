@@ -1,0 +1,54 @@
+server:
+  port: ${SERVER_PORT}
+
+spring:
+  config:
+    import: optional:file:ms-ordenes-core/.env[.properties]
+
+  application:
+    name: ordenes-service
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServerDialect
+        format_sql: true
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+
+services:
+  vehiculos:
+    url: ${CLIENTES_VEHICULOS_SERVICE_URL}
+
+  clientes:
+    url: ${CLIENTES_VEHICULOS_SERVICE_URL}
+
+  inventario:
+    url: ${INVENTARIO_SERVICE_URL}
+
+  usuarios:
+    url: ${USUARIOS_SERVICE_URL}
+
+app:
+  kafka:
+    topic:
+      ordenes: ordenes-eventos
+
+logging:
+  level:
+    com.autoservice.ordenes: debug
+    org.hibernate.SQL: debug
