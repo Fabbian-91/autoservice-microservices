@@ -3,7 +3,7 @@ server:
 
 spring:
   config:
-    import: optional:file:inventario-service/.env[.properties]
+    import: optional:file:ms-inventario-service/.env[.properties]
 
   application:
     name: inventario-service

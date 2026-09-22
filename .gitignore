@@ -27,3 +27,10 @@ Thumbs.db
 !.env.example
 
 .idea/compiler.xml
+
+# Variables de entorno con credenciales y secretos
+.env
+
+# Archivos de entorno locales
+.env.local
+.env.*.local

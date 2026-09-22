@@ -3,7 +3,7 @@ server:
 
 spring:
   config:
-    import: optional:file:ms-ordenes-core/.env[.properties]
+    import: optional:file:ms-ordenes-service/.env[.properties]
 
   application:
     name: ordenes-service

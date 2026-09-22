@@ -3,7 +3,7 @@ server:
 
 spring:
   config:
-    import: optional:file:citas-service/.env[.properties]
+    import: optional:file:ms-citas-service/.env[.properties]
 
   application:
     name: citas-service

@@ -3,7 +3,7 @@ server:
 
 spring:
   config:
-    import: optional:file:ms-clientes-vehiculos/.env[.properties]
+    import: optional:file:ms-clientes-vehiculos-service/.env[.properties]
 
   application:
     name: ms-clientes-vehiculos

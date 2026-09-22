@@ -3,7 +3,7 @@ server:
 
 spring:
   config:
-    import: optional:file:gateway-service/.env[.properties]
+    import: optional:file:ms-gateway-service/.env[.properties]
 
   application:
     name: gateway-service

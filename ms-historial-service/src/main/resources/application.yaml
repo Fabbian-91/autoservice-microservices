@@ -1,11 +1,17 @@
+server:
+  port: ${SERVER_PORT}
+
 spring:
+  config:
+    import: optional:file:ms-historial-service/.env[.properties]
+
   application:
     name: ms-historial-service
 
   datasource:
-    url: "jdbc:sqlserver://localhost:1433;databaseName=historial_db;encrypt=true;trustServerCertificate=true"
-    username: sa
-    password: crpp
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
   jpa:
@@ -18,16 +24,13 @@ spring:
         format_sql: true
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
 
     consumer:
       group-id: historial-group
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-
-server:
-  port: 8088
 
 logging:
   level:

@@ -3,7 +3,7 @@ server:
 
 spring:
   config:
-    import: optional:file:facturacion-service/.env[.properties]
+    import: optional:file:ms-facturacion-service/.env[.properties]
 
   application:
     name: facturacion-service

@@ -3,7 +3,7 @@ server:
 
 spring:
   config:
-    import: optional:file:usuarios-service/.env[.properties]
+    import: optional:file:ms-usuarios-service/.env[.properties]
 
   application:
     name: usuarios-service

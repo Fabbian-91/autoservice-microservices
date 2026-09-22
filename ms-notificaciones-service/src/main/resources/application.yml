@@ -3,7 +3,7 @@ server:
 
 spring:
   config:
-    import: optional:file:notificaciones-service/.env[.properties]
+    import: optional:file:ms-notificaciones-service/.env[.properties]
 
   application:
     name: notificaciones-service

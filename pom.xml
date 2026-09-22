@@ -30,16 +30,15 @@
     </properties>
 
     <modules>
-        <module>citas-service</module>
-        <module>inventario-service</module>
-        <module>ms-clientes-vehiculos</module>
-        <module>facturacion-service</module>
+        <module>ms-citas-service</module>
+        <module>ms-inventario-service</module>
+        <module>ms-clientes-vehiculos-service</module>
+        <module>ms-facturacion-service</module>
         <module>ms-historial-service</module>
-        <module>ms-ordenes-core</module>
-        <module>notificaciones-service</module>
-        <module>usuarios-service</module>
-        <module>gateway-service</module>
-        <module>facturacion-service</module>
+        <module>ms-ordenes-service</module>
+        <module>ms-notificaciones-service</module>
+        <module>ms-usuarios-service</module>
+        <module>ms-gateway-service</module>
     </modules>
 
 </project>
