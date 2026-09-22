@@ -22,28 +22,30 @@ spring:
         format_sql: true
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
 
 services:
   vehiculos:
-    url: http://localhost:8082
+    url: ${CLIENTES_VEHICULOS_SERVICE_URL:http://localhost:8082}
 
   clientes:
-    url: http://localhost:8082
+    url: ${CLIENTES_VEHICULOS_SERVICE_URL:http://localhost:8082}
 
   inventario:
-    url: http://localhost:8085
+    url: ${INVENTARIO_SERVICE_URL:http://localhost:8085}
 
   usuarios:
-    url: http://localhost:8081
+    url: ${USUARIOS_SERVICE_URL:http://localhost:8081}
 
 app:
   kafka:
     topic:
-      ordenes: ordenes-eventos
+      ordenes: ordenes-events
 
 logging:
   level:
