@@ -1,0 +1,36 @@
+# Compiled
+target/
+*.class
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+.idea/compiler.xml
+
+# Variables de entorno con credenciales y secretos
+.env
+
+# Archivos de entorno locales
+.env.local
+.env.*.local

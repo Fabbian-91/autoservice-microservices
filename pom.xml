@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Spring Boot es el padre del proyecto general -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.1.1</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.taller</groupId>
+    <artifactId>microservicios_taller</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+
+    <!-- Importante: el proyecto padre no genera un JAR -->
+    <packaging>pom</packaging>
+
+    <name>microservicios-taller</name>
+    <description>Proyecto padre de los microservicios del taller</description>
+
+    <properties>
+        <java.version>21</java.version>
+    </properties>
+
+    <modules>
+        <module>ms-citas-service</module>
+        <module>ms-inventario-service</module>
+        <module>ms-clientes-vehiculos-service</module>
+        <module>ms-facturacion-service</module>
+        <module>ms-historial-service</module>
+        <module>ms-ordenes-service</module>
+        <module>ms-notificaciones-service</module>
+        <module>ms-usuarios-service</module>
+        <module>ms-gateway-service</module>
+    </modules>
+
+</project>
