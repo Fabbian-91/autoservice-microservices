@@ -43,28 +43,40 @@ public class RepuestoOrdenService {
                         )
                 );
 
-        // Inventario valida existencia y stock.
+        // Obtener información del repuesto desde Inventario
         RepuestoInventarioResponse repuesto =
-                inventarioClient.descontarStock(
-                        request.repuestoId(),
-                        new SalidaInventarioRequest(
-                                request.cantidad(),
-                                ordenId
-                        )
+                inventarioClient.obtenerRepuesto(
+                        request.repuestoId()
                 );
 
+        // Descontar stock en Inventario
+        inventarioClient.descontarStock(
+                request.repuestoId(),
+                new SalidaInventarioRequest(
+                        request.cantidad(),
+                        ordenId
+                )
+        );
+
+        // Registrar el repuesto utilizado en la orden
         RepuestoOrden repuestoOrden =
                 new RepuestoOrden();
 
         repuestoOrden.setOrden(orden);
-        repuestoOrden.setRepuestoId(request.repuestoId());
-        repuestoOrden.setCantidad(request.cantidad());
+        repuestoOrden.setRepuestoId(
+                request.repuestoId()
+        );
+        repuestoOrden.setCantidad(
+                request.cantidad()
+        );
         repuestoOrden.setPrecioUnitario(
                 repuesto.precioUnitario()
         );
 
         RepuestoOrden guardado =
-                repuestoOrdenRepository.save(repuestoOrden);
+                repuestoOrdenRepository.save(
+                        repuestoOrden
+                );
 
         return convertirDTO(guardado);
     }

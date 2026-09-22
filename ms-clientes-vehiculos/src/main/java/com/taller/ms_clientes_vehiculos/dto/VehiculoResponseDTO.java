@@ -12,17 +12,11 @@ import java.time.LocalDateTime;
 public class VehiculoResponseDTO {
 
     private Long id;
-
+    private Long clienteId;
     private String placa;
-
     private String marca;
-
     private String modelo;
-
     private String color;
-
     private Integer year;
-
     private LocalDateTime fechaCreacion;
-
 }

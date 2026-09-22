@@ -8,12 +8,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VehiculoDTO {
-
     private Long id;
     private Long clienteId;
     private String placa;
     private String marca;
     private String modelo;
-    private Integer anio;
+    private Integer year;
     private String color;
 }

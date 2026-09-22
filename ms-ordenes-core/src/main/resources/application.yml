@@ -6,25 +6,20 @@ spring:
     name: ordenes-service
 
   datasource:
-    url: ${ORDENES_DATASOURCE_URL:jdbc:h2:file:/app/data/ordenes_db;DB_CLOSE_ON_EXIT=FALSE}
-    driver-class-name: org.h2.Driver
-    username: ${DB_USERNAME:sa}
-    password: ${DB_PASSWORD:}
+    url: jdbc:sqlserver://localhost:1433;databaseName=ordenes_db;encrypt=true;trustServerCertificate=true
+    username: sa
+    password: crpp
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
     show-sql: true
     open-in-view: false
     properties:
       hibernate:
+        dialect: org.hibernate.dialect.SQLServerDialect
         format_sql: true
-
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
 
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}

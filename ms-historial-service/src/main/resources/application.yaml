@@ -3,9 +3,9 @@ spring:
     name: ms-historial-service
 
   datasource:
-    url: "${HISTORIAL_DATASOURCE_URL:jdbc:sqlserver://localhost:1433;databaseName=historial_db;encrypt=true;trustServerCertificate=true}"
-    username: ${DB_USERNAME:sa}
-    password: ${DB_PASSWORD}
+    url: "jdbc:sqlserver://localhost:1433;databaseName=historial_db;encrypt=true;trustServerCertificate=true"
+    username: sa
+    password: crpp
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
   jpa:
